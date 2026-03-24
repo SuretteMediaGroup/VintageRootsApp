@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Vintage Roots — Color Inventory</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3f0; --surface: #ffffff; --surface2: #f0ede8; --surface3: #e8e4de;
+  --border: #ddd9d3; --gold: #9a6f2a; --gold-dim: #c9a84c; --gold-glow: rgba(154,111,42,0.08);
+  --text: #1a1612; --text-muted: #7a7068; --text-dim: #b5afa7;
+  --green: #2d7a52; --red: #c0392b; --blue: #2563a8; --amber: #b07a10; --r: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; min-height: 100vh; }
+
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-sub { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); }
+.header-right { display: flex; gap: 8px; align-items: center; }
+
+.tabs { display:flex; gap:2px; background:var(--surface2); padding:4px; border-radius:var(--r); }
+.tab { padding:6px 14px; border-radius:4px; cursor:pointer; font-size:13px; font-weight:500; color:var(--text-muted); transition:all .15s; border:none; background:none; }
+.tab.active { background:var(--surface3); color:var(--text); }
+.tab:hover:not(.active) { color:var(--text); }
+
+.app { display:flex; height:calc(100vh - 60px); }
+.sidebar { width:210px; background:var(--surface); border-right:1px solid var(--border); padding:14px 0; overflow-y:auto; flex-shrink:0; }
+.main { flex:1; overflow-y:auto; padding:20px 24px; }
+
+.sidebar-label { font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); padding:0 16px 6px; margin-top:10px; }
+.nav-item { display:flex; align-items:center; gap:9px; padding:8px 16px; cursor:pointer; color:var(--text-muted); font-size:13px; transition:all .1s; border-left:2px solid transparent; }
+.nav-item:hover { color:var(--text); background:var(--gold-glow); }
+.nav-item.active { color:var(--gold); background:var(--gold-glow); border-left-color:var(--gold); }
+.nav-badge { margin-left:auto; background:var(--red); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; font-weight:600; }
+
+.section-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; gap:12px; }
+.section-title { font-family:'DM Serif Display',serif; font-size:22px; }
+.section-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px; margin-bottom:18px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; }
+.stat-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+.stat-value { font-family:'DM Serif Display',serif; font-size:26px; }
+.stat-value.gold { color:var(--gold); } .stat-value.red { color:var(--red); } .stat-value.green { color:var(--green); }
+.stat-sub { font-size:11px; color:var(--text-dim); margin-top:2px; }
+
+.table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:20px; }
+table { width:100%; border-collapse:collapse; }
+thead { background:var(--surface2); }
+th { padding:9px 12px; text-align:left; font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border); white-space:nowrap; }
+td { padding:9px 12px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(154,111,42,.03); }
+.product-code { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; }
+
+.qty-btn { width:26px; height:26px; border-radius:4px; border:1px solid var(--border); background:var(--surface2); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all .1s; flex-shrink:0; }
+.qty-btn:hover { border-color:var(--gold-dim); color:var(--gold); background:var(--gold-glow); }
+.qty-btn.red-btn { border-color:rgba(192,57,43,.25); color:var(--red); background:rgba(192,57,43,.06); }
+.qty-btn.red-btn:hover { border-color:var(--red); background:rgba(192,57,43,.12); }
+.qty-btn.blue-btn:hover { border-color:rgba(37,99,168,.4); color:var(--blue); background:rgba(37,99,168,.06); }
+.qty-num { font-family:'DM Mono',monospace; font-size:14px; min-width:22px; text-align:center; font-weight:500; }
+.qty-num.zero { color:var(--text-dim); }
+
+.num-input { width:54px; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:4px 6px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; text-align:center; outline:none; transition:border-color .15s; }
+.num-input:focus { border-color:var(--gold-dim); }
+
+.stock-pill { display:inline-flex; align-items:center; padding:2px 8px; border-radius:20px; font-family:'DM Mono',monospace; font-size:11px; font-weight:600; }
+.stock-ok  { background:rgba(45,122,82,.1);  color:var(--green); border:1px solid rgba(45,122,82,.25); }
+.stock-low { background:rgba(176,122,16,.1); color:var(--amber); border:1px solid rgba(176,122,16,.25); }
+.stock-out { background:rgba(192,57,43,.1);  color:var(--red);   border:1px solid rgba(192,57,43,.25); }
+.stock-none{ background:var(--surface2); color:var(--text-dim); border:1px solid var(--border); }
+.stock-ondemand { background:rgba(37,99,168,.08); color:var(--blue); border:1px solid rgba(37,99,168,.2); }
+
+/* SETUP TOGGLE */
+.toggle-wrap { display:flex; align-items:center; gap:8px; }
+.toggle { position:relative; width:36px; height:20px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; background:var(--border); border-radius:20px; cursor:pointer; transition:.2s; }
+.toggle-slider:before { content:''; position:absolute; width:14px; height:14px; left:3px; bottom:3px; background:white; border-radius:50%; transition:.2s; }
+.toggle input:checked + .toggle-slider { background:var(--blue); }
+.toggle input:checked + .toggle-slider:before { transform:translateX(16px); }
+.toggle-label { font-size:12px; color:var(--text-muted); cursor:pointer; }
+.toggle-label.active { color:var(--blue); font-weight:500; }
+
+.cat-chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+.cat-TOPCHIC   { background:rgba(37,99,168,.1);  color:#2563a8; }
+.cat-COLORANCE { background:rgba(154,111,42,.12); color:var(--gold); }
+.cat-GLOSS     { background:rgba(45,122,82,.1);   color:var(--green); }
+.cat-BACKBAR   { background:rgba(192,57,43,.1);   color:var(--red); }
+
+.badge { background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 7px; font-family:'DM Mono',monospace; font-size:12px; display:inline-block; }
+.badge-green { background:rgba(45,122,82,.1);  border-color:rgba(45,122,82,.25);  color:var(--green); }
+.badge-gold  { background:rgba(154,111,42,.1); border-color:rgba(154,111,42,.25); color:var(--gold);  font-weight:600; }
+.badge-red   { background:rgba(192,57,43,.1);  border-color:rgba(192,57,43,.25);  color:var(--red); }
+.badge-blue  { background:rgba(37,99,168,.1);  border-color:rgba(37,99,168,.25);  color:var(--blue); }
+
+.btn { padding:8px 14px; border-radius:var(--r); border:none; cursor:pointer; font-size:13px; font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:6px; }
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold-dim)); color:#fff; }
+.btn-gold:hover { opacity:.9; transform:translateY(-1px); }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-muted); }
+.btn-outline:hover { border-color:var(--gold-dim); color:var(--text); }
+.btn-red  { background:rgba(192,57,43,.1); border:1px solid rgba(192,57,43,.3); color:var(--red); }
+.btn-blue { background:rgba(37,99,168,.1); border:1px solid rgba(37,99,168,.3); color:var(--blue); }
+
+/* BIN CARDS */
+.bin-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:9px; margin-bottom:20px; }
+.bin-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:11px 12px; transition:all .15s; user-select:none; display:flex; flex-direction:column; gap:5px; }
+.bin-card:hover { box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.bin-card.has-count { border-color:rgba(192,57,43,.35); background:rgba(192,57,43,.02); }
+.bin-card-code { font-family:'DM Mono',monospace; font-size:14px; font-weight:500; }
+.bin-card-controls { display:flex; align-items:center; gap:7px; margin-top:3px; }
+.bin-count { font-family:'DM Mono',monospace; font-size:20px; font-weight:700; min-width:28px; text-align:center; color:var(--red); }
+.bin-count.zero { color:var(--text-dim); font-size:14px; font-weight:400; }
+
+.week-bar { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.week-btn { padding:6px 14px; border-radius:var(--r); border:1px solid var(--border); background:var(--surface2); color:var(--text-muted); cursor:pointer; font-size:12px; font-weight:500; font-family:'DM Mono',monospace; transition:all .15s; }
+.week-btn:hover { border-color:var(--gold-dim); color:var(--text); }
+.week-btn.active { background:var(--gold-glow); border-color:var(--gold); color:var(--gold); }
+
+.search-wrap { position:relative; margin-bottom:14px; }
+.search-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:8px 12px 8px 34px; color:var(--text); font-size:13px; outline:none; }
+.search-input:focus { border-color:var(--gold-dim); }
+.search-input::placeholder { color:var(--text-dim); }
+.search-icon { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--text-dim); font-size:13px; pointer-events:none; }
+
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; z-index:999; backdrop-filter:blur(3px); }
+.modal { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:26px; width:430px; max-width:95vw; max-height:90vh; overflow-y:auto; }
+.modal h3 { font-family:'DM Serif Display',serif; font-size:20px; margin-bottom:14px; }
+.modal-input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r); padding:9px 12px; color:var(--text); font-size:14px; outline:none; margin-bottom:10px; }
+.modal-input:focus { border-color:var(--gold-dim); }
+.modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
+label { font-size:12px; color:var(--text-muted); display:block; margin-bottom:3px; }
+select { background:var(--surface2); border:1px solid var(--border); border-radius:var(--r); padding:8px 12px; color:var(--text); font-size:13px; outline:none; width:100%; margin-bottom:10px; }
+
+.receive-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--border); gap:10px; }
+.receive-item:last-child { border-bottom:none; }
+
+.toast { position:fixed; bottom:20px; right:20px; background:var(--text); color:var(--bg); font-size:13px; padding:10px 16px; border-radius:var(--r); z-index:9999; transform:translateX(120%); transition:transform .25s; box-shadow:0 4px 16px rgba(0,0,0,.15); }
+.toast.show { transform:translateX(0); }
+.divider { border:none; border-top:1px solid var(--border); margin:10px 0; }
+.empty-state { text-align:center; padding:48px; color:var(--text-dim); line-height:1.8; }
+
+/* SALE FLAG */
+.sale-tag { display:inline-flex; align-items:center; padding:1px 7px; border-radius:20px; font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; background:rgba(176,122,16,.15); color:var(--amber); border:1px solid rgba(176,122,16,.3); }
+.bin-card.on-sale { border-color:rgba(176,122,16,.5); background:rgba(176,122,16,.03); }
+.bin-card.on-sale .bin-card-code { color:var(--amber); }
+.sale-toggle { font-size:11px; cursor:pointer; padding:2px 7px; border-radius:20px; border:1px solid var(--border); background:var(--surface2); color:var(--text-muted); transition:all .15s; }
+.sale-toggle.active { background:rgba(176,122,16,.12); border-color:rgba(176,122,16,.4); color:var(--amber); }
+.po-line-sale { background:rgba(176,122,16,.06); border-left:3px solid var(--amber); }
+.po-sale-note { font-size:11px; color:var(--amber); margin-top:2px; }
+
+/* PO LINE ITEMS */
+.po-line { display:flex; align-items:center; gap:10px; padding:8px 14px; border-bottom:1px solid var(--border); }
+.po-line:last-child { border-bottom:none; }
+.po-line-cat { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; width:80px; flex-shrink:0; }
+.po-line-code { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; flex:1; }
+.po-line-suggest { font-size:11px; color:var(--text-muted); width:60px; text-align:right; flex-shrink:0; }
+.po-qty-input { width:60px; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:5px 8px; font-family:'DM Mono',monospace; font-size:14px; font-weight:600; text-align:center; outline:none; color:var(--text); }
+.po-qty-input:focus { border-color:var(--gold-dim); background:#fff; }
+.po-cat-header { background:var(--surface2); padding:7px 14px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border); }
+
+/* PRINT STYLES */
+@media print {
+  body > *:not(#po-printout) { display:none !important; }
+  #po-printout { display:block !important; }
+  @page { margin: 18mm 20mm; size: A4; }
+}
+
+/* PO PRINTOUT STYLES */
+#po-print-content {
+  font-family: 'DM Sans', sans-serif;
+  color: #1a1612;
+  font-size: 13px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.po-print-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; padding-bottom:18px; border-bottom:2px solid #1a1612; }
+.po-print-title { font-family:'DM Serif Display',serif; font-size:30px; letter-spacing:.02em; margin-bottom:4px; }
+.po-print-sub { font-size:11px; color:#7a7068; letter-spacing:.08em; text-transform:uppercase; }
+.po-print-meta { text-align:right; font-size:12px; line-height:1.8; }
+.po-print-meta strong { display:block; font-size:14px; margin-bottom:4px; }
+.po-print-from-to { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px; font-size:13px; line-height:1.7; }
+.po-from-label, .po-to-label { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#7a7068; margin-bottom:4px; }
+.po-print-table { width:100%; border-collapse:collapse; margin-bottom:24px; }
+.po-print-table th { background:#f0ede8; padding:8px 12px; text-align:left; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#7a7068; border-bottom:1px solid #ddd9d3; }
+.po-print-table td { padding:9px 12px; border-bottom:1px solid #ece9e4; font-size:13px; vertical-align:middle; }
+.po-print-table tr:last-child td { border-bottom:none; }
+.po-print-table .cat-row td { background:#f8f6f3; font-weight:600; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#7a7068; padding:5px 12px; }
+.po-print-qty { font-family:'DM Mono',monospace; font-size:14px; font-weight:700; text-align:right; }
+.po-print-footer { border-top:1px solid #ddd9d3; padding-top:14px; display:flex; justify-content:space-between; align-items:flex-end; font-size:12px; color:#7a7068; }
+.po-print-total { font-family:'DM Mono',monospace; font-size:18px; font-weight:700; color:#1a1612; }
+.po-sig-line { border-top:1px solid #1a1612; width:200px; margin-top:32px; padding-top:6px; font-size:11px; color:#7a7068; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="data:image/png;base64,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" alt="Vintage Roots Hair Salon" style="height:38px;width:auto;object-fit:contain">
+    <div style="border-left:1px solid var(--border);height:26px;margin:0 2px"></div>
+    <div class="logo-sub">Color Inventory</div>
+  </div>
+  <div class="header-right">
+    <div class="tabs">
+      <button class="tab active" onclick="switchView('empties')">📦 Log Empties</button>
+      <button class="tab" onclick="switchView('stock')">🗂 Stock</button>
+      <button class="tab" onclick="switchView('order')">📋 Order Report</button>
+      <button class="tab" onclick="switchView('setup')">⚙️ Setup</button>
+    </div>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-label">Categories</div>
+    <div class="nav-item active" id="nav-all" onclick="setCategory('all',this)"><span>🎨</span> All Products</div>
+    <div class="nav-item" id="nav-TOPCHIC" onclick="setCategory('TOPCHIC',this)"><span>💧</span> Topchic</div>
+    <div class="nav-item" id="nav-COLORANCE" onclick="setCategory('COLORANCE',this)"><span>🌸</span> Colorance</div>
+    <div class="nav-item" id="nav-GLOSSTONES" onclick="setCategory('GLOSS TONES',this)"><span>✨</span> Gloss Tones</div>
+    <div class="nav-item" id="nav-BACKBAR" onclick="setCategory('BACKBAR',this)"><span>📦</span> Backbar</div>
+    <div class="nav-item" id="nav-lowstock" onclick="setCategory('lowstock',this)"><span>⚠️</span> Low Stock <span class="nav-badge" id="low-badge" style="display:none">0</span></div>
+    <div class="nav-item" id="nav-onsale" onclick="setCategory('onsale',this)"><span>🏷</span> On Sale <span class="nav-badge" id="sale-badge" style="display:none;background:var(--amber)">0</span></div>
+    <hr class="divider">
+    <div class="sidebar-label">Actions</div>
+    <div class="nav-item" onclick="openReceiveModal()"><span>📬</span> Receive Order</div>
+    <div class="nav-item" onclick="openAddModal()"><span>＋</span> Add Product</div>
+    <div class="nav-item" onclick="exportCSV()"><span>⬇️</span> Export CSV</div>
+    <hr class="divider">
+    <div class="sidebar-label">Data</div>
+    <div class="nav-item" onclick="openRolloverModal()"><span>🔄</span> New Month</div>
+    <div class="nav-item" onclick="openResetModal()" style="color:var(--red)"><span>🗑</span> Clear Test Data</div>
+  </aside>
+  <main class="main" id="main-content"></main>
+</div>
+
+<!-- RECEIVE ORDER MODAL -->
+<div class="modal-overlay" id="receive-modal" style="display:none">
+  <div class="modal">
+    <h3>📬 Receive Order from Goldwell</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5">Log quantities received. On Hand updates automatically.</p>
+    <button class="btn btn-outline" style="width:100%;margin-bottom:10px" onclick="openScanModal('receive')">📷 Scan to Receive</button>
+    <div class="search-wrap" style="margin-bottom:8px">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="receive-search" placeholder="Filter products..." oninput="renderReceiveList(this.value)">
+    </div>
+    <div id="receive-list" style="max-height:340px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r)"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeReceiveModal()">Cancel</button>
+      <button class="btn btn-blue" onclick="confirmReceiveOrder()">✓ Update Stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="add-modal" style="display:none">
+  <div class="modal">
+    <h3>Add New Product</h3>
+    <label>Category</label>
+    <select id="new-cat"><option value="TOPCHIC">Topchic</option><option value="COLORANCE">Colorance</option><option value="GLOSS TONES">Gloss Tones</option><option value="BACKBAR">Backbar</option></select>
+    <label>Product Code</label>
+    <input class="modal-input" id="new-code" placeholder="e.g. 6N, 7RR@RR">
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('add-modal').style.display='none'">Cancel</button>
+      <button class="btn btn-gold" onclick="addProduct()">Add Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROLLOVER MODAL -->
+<div class="modal-overlay" id="rollover-modal" style="display:none">
+  <div class="modal">
+    <h3>🔄 Start New Month</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.6">Your current On Hand carries forward automatically. Empties and ordered quantities reset to zero for the new month.</p>
+    <div style="background:var(--surface2);border-radius:var(--r);padding:12px 14px;font-size:13px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text-muted)">Current month</span><span style="font-family:'DM Mono',monospace" id="rollover-current"></span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Rolling to</span><span style="font-family:'DM Mono',monospace;color:var(--gold)" id="rollover-next"></span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('rollover-modal').style.display='none'">Cancel</button>
+      <button class="btn btn-gold" onclick="confirmRollover()">Start New Month →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET MODAL -->
+<div class="modal-overlay" id="reset-modal" style="display:none">
+  <div class="modal">
+    <h3>🗑 Clear Test Data</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">On Hand and par levels are always preserved.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px">
+        <input type="radio" name="reset-scope" value="current" checked style="margin-top:2px;accent-color:var(--gold)">
+        <div><div style="font-weight:500">Clear current month only</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px">Wipes empties + ordered for the current month</div></div>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px">
+        <input type="radio" name="reset-scope" value="all" style="margin-top:2px;accent-color:var(--gold)">
+        <div><div style="font-weight:500">Clear all history</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px">Wipes all empties and ordered data across all time</div></div>
+      </label>
+    </div>
+    <div style="background:rgba(192,57,43,.05);border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--red);margin-bottom:12px">⚠️ Cannot be undone.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('reset-modal').style.display='none'">Cancel</button>
+      <button class="btn btn-red" onclick="confirmReset()">Clear Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- PURCHASE ORDER MODAL -->
+<div class="modal-overlay" id="po-modal" style="display:none">
+  <div class="modal" style="width:620px;max-width:96vw">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h3 style="margin:0">📄 Purchase Order</h3>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="closePOModal()">Cancel</button>
+        <button class="btn btn-gold" onclick="printPO()">🖨 Print / Save PDF</button>
+      </div>
+    </div>
+
+    <!-- PO Header Fields -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div>
+        <label>Salon Name</label>
+        <input class="modal-input" id="po-salon" value="Vintage Roots Hair Salon" style="margin:0">
+      </div>
+      <div>
+        <label>Salon Address</label>
+        <input class="modal-input" id="po-address" placeholder="123 Main St, City, State ZIP" style="margin:0">
+      </div>
+      <div>
+        <label>Goldwell Account #</label>
+        <input class="modal-input" id="po-account" placeholder="Account number" style="margin:0">
+      </div>
+      <div>
+        <label>PO Number</label>
+        <input class="modal-input" id="po-number" style="margin:0">
+      </div>
+    </div>
+
+    <div style="background:var(--surface2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--text-muted);margin-bottom:14px">
+      💡 Quantities pre-filled from suggested order. <span style="color:var(--amber);font-weight:500">Amber items are on sale this month</span> — bump those quantities as needed before printing.
+    </div>
+
+    <!-- PO Line Items -->
+    <div id="po-lines" style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r)"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--text-muted)">Total units: <strong id="po-total-display" style="color:var(--text)">0</strong></span>
+      <button class="btn btn-gold" onclick="printPO()">🖨 Print / Save PDF</button>
+    </div>
+
+    <!-- Manual add -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Add any product to order</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="position:relative;flex:1">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px">🔍</span>
+          <input class="modal-input" id="po-add-search" placeholder="Search product code..." style="margin:0;padding-left:32px" oninput="renderPOAddResults(this.value)">
+        </div>
+      </div>
+      <div id="po-add-results" style="margin-top:6px;border:1px solid var(--border);border-radius:var(--r);max-height:180px;overflow-y:auto;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRINTABLE PO (hidden, revealed on print) -->
+<div id="po-printout" style="display:none">
+  <div id="po-print-content"></div>
+</div>
+
+<!-- BARCODE SCAN MODAL -->
+<div class="modal-overlay" id="scan-modal" style="display:none">
+  <div class="modal" style="width:440px;max-width:96vw">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h3 style="margin:0" id="scan-modal-title">📷 Scan Barcode</h3>
+      <button class="btn btn-outline" style="padding:5px 10px" onclick="closeScanModal()">✕ Close</button>
+    </div>
+
+    <!-- Camera viewfinder -->
+    <div id="scan-viewport" style="position:relative;width:100%;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:12px;min-height:220px;display:flex;align-items:center;justify-content:center">
+      <div id="scan-placeholder" style="color:#666;font-size:13px;text-align:center;padding:20px">
+        <div style="font-size:32px;margin-bottom:8px">📷</div>
+        Tap "Start Camera" to begin scanning
+      </div>
+      <!-- Quagga renders video here -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;height:2px;background:rgba(201,168,76,0.7);pointer-events:none;display:none" id="scan-line"></div>
+    </div>
+
+    <button class="btn btn-gold" id="scan-start-btn" style="width:100%;margin-bottom:12px" onclick="startScanner()">📷 Start Camera</button>
+
+    <div style="position:relative;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-bottom:8px">— or type manually —</div>
+      <input class="modal-input" id="scan-manual-input" placeholder="Type product code or barcode number..." style="margin:0" oninput="scanLookup(this.value)">
+    </div>
+
+    <!-- Match result -->
+    <div id="scan-result" style="display:none;padding:12px 14px;border-radius:var(--r);margin-bottom:12px;font-size:13px"></div>
+
+    <!-- Unknown barcode: pick product -->
+    <div id="scan-assign" style="display:none">
+      <div style="font-size:12px;color:var(--amber);margin-bottom:8px">⚠️ Unknown barcode — which product is this?</div>
+      <input class="modal-input" id="scan-assign-search" placeholder="Search product code..." oninput="renderScanAssignList(this.value)" style="margin-bottom:6px">
+      <div id="scan-assign-list" style="max-height:160px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r)"></div>
+    </div>
+
+    <div class="modal-footer" style="margin-top:8px">
+      <button class="btn btn-outline" onclick="closeScanModal()">Cancel</button>
+      <button class="btn btn-gold" id="scan-confirm-btn" style="display:none" onclick="confirmScan()">✓ Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+
+<script>
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const now = new Date();
+
+// ── IMPORTED DATA (Goldwell March 2026 spreadsheet) ──────────────────────────
+const importedStock   = {"TC_2N":0,"TC_3N":5,"TC_4N":3,"TC_5N":5,"TC_6N":5,"TC_7N":4,"TC_8N":3,"TC_9N":4,"TC_10N":3,"TC_11N":3,"TC_3NN":0,"TC_4NN":0,"TC_5NN":4,"TC_6NN":6,"TC_7NN":4,"TC_8NN":3,"TC_9NN":2,"TC_4NA":4,"TC_5NA":3,"TC_6NA":4,"TC_7NA":6,"TC_8NA":2,"TC_9NA":3,"TC_2A":0,"TC_5A":2,"TC_6A":2,"TC_7A":2,"TC_8A":0,"TC_9A":0,"TC_10A":0,"TC_11A":0,"TC_6SB":2,"TC_7SB":2,"TC_8SB":0,"TC_5MB":0,"TC_6MB":0,"TC_7MB":2,"TC_4G":0,"TC_6G":0,"TC_7G":0,"TC_8G":0,"TC_9G":2,"TC_9GN":0,"TC_5BG":3,"TC_7BG":3,"TC_5GB":0,"TC_6GB":3,"TC_7GB":2,"TC_8GB":2,"TC_9GB":0,"TC_10GB":0,"TC_5K":0,"TC_6K":2,"TC_7K":0,"TC_8K":0,"TC_8KN":0,"TC_6KG":2,"TC_7KG":0,"TC_8KG":0,"TC_6KR":2,"TC_7OO":0,"TC_5R":2,"TC_6R":0,"TC_5RB":2,"TC_6RB":3,"TC_7RB":3,"TC_7RO":0,"TC_5RR":1,"TC_6RR":1,"TC_7RR":0,"TC_6RV":2,"TC_10V":0,"TC_11V":0,"TC_3VV":0,"TC_5VV":3,"TC_6VV":0,"TC_11SV":0,"TC_4B":0,"TC_5B":0,"TC_6B":2,"TC_7B":2,"TC_8B":0,"TC_7BN":0,"TC_4BP":0,"TC_5BP":3,"TC_6BP":3,"TC_10P":0,"TC_11P":0,"TC_BC":2,"TC_6NP":2,"TC_7NP":2,"TC_9NP":1,"TC_11SN":0,"TC_8CA":0,"TC_9N@BS":1,"TC_9N@BP":1,"TC_8N@KK":0,"TC_8N@GB":3,"TC_8N@BS":0,"TC_7N@BP":4,"TC_7N@BK":0,"TC_6N@GB":3,"TC_5N@BP":3,"TC_5N@BK":0,"TC_7RR@RR":0,"TC_6BP@VA":0,"TC_6VV@Pk":0,"TC_7AK@Pk":0,"TC_8CA@PB":0,"TC_9N@Pk":0,"TC_7BP@Pk":0,"TC_6NN@CV":0,"CO_2A":5,"CO_6A":5,"CO_2N":5,"CO_3N":3,"CO_4N":4,"CO_5N":6,"CO_6N":9,"CO_7N":7,"CO_8N":6,"CO_9N":6,"CO_10N":6,"CO_4NN":4,"CO_5NN":4,"CO_6NN":5,"CO_7NN":4,"CO_8NN":4,"CO_5NA":5,"CO_7NA":5,"CO_9NA":5,"CO_6SB":0,"CO_8SB":1,"CO_5MB":3,"CO_7MB":3,"CO_4G":3,"CO_7G":6,"CO_8G":6,"CO_10G":7,"CO_5BG":5,"CO_7BG":5,"CO_8GB":7,"CO_9GB":5,"CO_5K":2,"CO_6K":3,"CO_8K":2,"CO_6KG":3,"CO_7KG":2,"CO_9KG":2,"CO_6KR":4,"CO_5R":3,"CO_6R":2,"CO_5RB":3,"CO_6RB":3,"CO_7RB":2,"CO_7RR":0,"CO_8OR":2,"CO_10V":8,"CO_5VV":3,"CO_6VV":2,"CO_5B":3,"CO_6B":2,"CO_7B":0,"CO_8BA":9,"CO_9BA":6,"CO_4BP":2,"CO_5BP":4,"CO_6BP":5,"CO_10P":6,"CO_CLEAR":5,"CO_10BA":5,"CO_10BB":4,"CO_10BG":8,"CO_10BS":11,"CO_10BV":2,"CO_10GP":2,"CO_8BV":2,"CO_8BP":4,"CO_10BP":2,"CO_8GP":2,"CO_8CA":4,"CO_6 NATURAL":3,"CO_7 NATURAL":2,"CO_8 NATURAL":2,"CO_7N@BP":4,"CO_6N@GB":4,"CO_5N@BP":4,"CO_7RR@RR":2,"CO_8SB@Pk":2,"CO_6VV@Pk":2,"CO_7AK@Pk":0,"CO_8CA@PB":2,"GT_8AV":1,"GT_8V":1,"GT_8BB":4,"GT_9BN":3,"GT_9CP":0,"GT_9PN":3,"GT_9PV":3,"GT_9S":0,"GT_9V":4,"GT_9BB":4,"GT_10B":0,"GT_10BN":2,"GT_10PV":3,"GT_10S":2,"GT_10BC":4,"GT_CLEAR":2,"GT_8BC":7,"BB_SILKLIFT":0,"BB_LD SILKLIFT CONTROL PEARL LV 6-8 500G":3,"BB_LD SILKLIFT CLAY":4,"BB_LD SILKLIFT 2 IN 1 SERUM 75ML":0,"BB_LD SILKLIFT 3% COND CREAM DEV 750ML":21,"BB_LD SILKLIFT 6% COND CREAM DEV 750ML":17,"BB_LD SILKLIFT 9% COND CREAM DEV 750ML":20,"BB_LD SILKLIFT STRONG 500G":25,"BB_LD SILKLIFT ZERO AMMONIA 500G":3,"BB_LD BRIGHTENER NATURAL60ML":3,"BB_LD BRIGHTENER SILVER 60ML":3,"BB_OXYCUR":0,"BB_LD DUST FREE BLUE PWDR 500g":4,"BB_LD DUST FREE PWDR 1000g":0,"BB_DEVELOPER":0,"BB_GW SYS DEVELOPER 2% 1L - 7 VOL":28,"BB_GW SYS DEVELOPER 3% 1L - 10 VOL":10,"BB_GW SYS DEVELOPER 6% 1L -20 VOL":13,"BB_GW SYS DEVELOPER 9% 1L - 30 VOL":4,"BB_GW SYS DEVELOPER 12% 1L - 40 VOL":3,"BB_SYSTEM SUPPORT":0,"BB_STRUCTURE EQUALIZER 150ML":0,"BB_SERUMS":0,"BB_COLOR INTENSIVE SERUM 12X18ML":0,"BB_COLOR ER INTENSIVE SERUM  12X18ML":0,"BB_B&H INTENSIVE SERUM 12X18ML":0,"BB_JS INTENSIVE SERUM  12X18ML":0,"BB_RR INTENSIVE SERUM 12X18ML":0,"BB_UV INTENSIVE SERUM 12X18ML":0,"BB_CW INTENSIVE SERUM 12X18ML":0};
+const importedOrdered = {"TC_3N":5,"TC_4N":4,"TC_5N":5,"TC_6N":5,"TC_7N":4,"TC_8N":3,"TC_9N":4,"TC_10N":3,"TC_11N":3,"TC_5NN":5,"TC_6NN":6,"TC_7NN":4,"TC_8NN":3,"TC_9NN":2,"TC_4NA":4,"TC_5NA":3,"TC_6NA":5,"TC_7NA":7,"TC_8NA":2,"TC_9NA":3,"TC_5A":2,"TC_6A":2,"TC_7A":2,"TC_6SB":2,"TC_7SB":2,"TC_7MB":2,"TC_9G":2,"TC_5BG":3,"TC_7BG":3,"TC_6GB":3,"TC_7GB":2,"TC_8GB":2,"TC_6K":2,"TC_6KG":2,"TC_6KR":2,"TC_5R":2,"TC_5RB":2,"TC_6RB":3,"TC_7RB":3,"TC_5RR":1,"TC_6RR":1,"TC_6RV":2,"TC_5VV":3,"TC_6B":2,"TC_7B":2,"TC_5BP":3,"TC_6BP":3,"TC_BC":2,"TC_6NP":2,"TC_7NP":2,"TC_9NP":1,"TC_9N@BS":1,"TC_9N@BP":1,"TC_8N@GB":3,"TC_7N@BP":4,"TC_6N@GB":3,"TC_5N@BP":3,"CO_2A":5,"CO_6A":6,"CO_2N":5,"CO_3N":4,"CO_4N":4,"CO_5N":7,"CO_6N":10,"CO_7N":7,"CO_8N":6,"CO_9N":6,"CO_10N":6,"CO_4NN":4,"CO_5NN":5,"CO_6NN":5,"CO_7NN":4,"CO_8NN":4,"CO_5NA":5,"CO_7NA":6,"CO_9NA":6,"CO_8SB":1,"CO_5MB":3,"CO_7MB":3,"CO_4G":3,"CO_7G":7,"CO_8G":6,"CO_10G":7,"CO_5BG":5,"CO_7BG":5,"CO_8GB":7,"CO_9GB":5,"CO_5K":2,"CO_6K":3,"CO_8K":2,"CO_6KG":3,"CO_7KG":2,"CO_9KG":2,"CO_6KR":4,"CO_5R":3,"CO_6R":2,"CO_5RB":3,"CO_6RB":3,"CO_7RB":2,"CO_8OR":2,"CO_10V":10,"CO_5VV":3,"CO_6VV":2,"CO_5B":3,"CO_6B":2,"CO_8BA":10,"CO_9BA":7,"CO_4BP":2,"CO_5BP":4,"CO_6BP":5,"CO_10P":6,"CO_CLEAR":5,"CO_10BA":5,"CO_10BB":4,"CO_10BG":9,"CO_10BS":13,"CO_10BV":2,"CO_10GP":2,"CO_8BV":2,"CO_8BP":4,"CO_10BP":2,"CO_8GP":2,"CO_8CA":4,"CO_6 NATURAL":3,"CO_7 NATURAL":2,"CO_8 NATURAL":2,"CO_7N@BP":5,"CO_6N@GB":4,"CO_5N@BP":4,"CO_7RR@RR":2,"CO_8SB@Pk":2,"CO_6VV@Pk":2,"CO_8CA@PB":2,"GT_8AV":1,"GT_8V":1,"GT_8BB":4,"GT_9BN":4,"GT_9PN":3,"GT_9PV":4,"GT_9V":4,"GT_9BB":4,"GT_10BN":2,"GT_10PV":3,"GT_10S":2,"GT_10BC":4,"GT_CLEAR":2,"GT_8BC":7,"BB_LD SILKLIFT CONTROL PEARL LV 6-8 500G":3,"BB_LD SILKLIFT CLAY":5,"BB_LD SILKLIFT 3% COND CREAM DEV 750ML":21,"BB_LD SILKLIFT 6% COND CREAM DEV 750ML":18,"BB_LD SILKLIFT 9% COND CREAM DEV 750ML":21,"BB_LD SILKLIFT STRONG 500G":28,"BB_LD SILKLIFT ZERO AMMONIA 500G":3,"BB_LD BRIGHTENER NATURAL60ML":4,"BB_LD BRIGHTENER SILVER 60ML":3,"BB_LD DUST FREE BLUE PWDR 500g":5,"BB_GW SYS DEVELOPER 2% 1L - 7 VOL":32,"BB_GW SYS DEVELOPER 3% 1L - 10 VOL":11,"BB_GW SYS DEVELOPER 6% 1L -20 VOL":15,"BB_GW SYS DEVELOPER 9% 1L - 30 VOL":4,"BB_GW SYS DEVELOPER 12% 1L - 40 VOL":3};
+const importedEmpties = {"TC_4N":1,"TC_5NN":1,"TC_6NA":1,"TC_7NA":1,"CO_6A":1,"CO_3N":1,"CO_5N":1,"CO_6N":1,"CO_5NN":1,"CO_7NA":1,"CO_9NA":1,"CO_7G":1,"CO_10V":2,"CO_8BA":1,"CO_9BA":1,"CO_10BG":1,"CO_10BS":2,"CO_7N@BP":1,"GT_9BN":1,"GT_9PV":1,"BB_LD SILKLIFT CLAY":1,"BB_LD SILKLIFT 6% COND CREAM DEV 750ML":1,"BB_LD SILKLIFT 9% COND CREAM DEV 750ML":1,"BB_LD SILKLIFT STRONG 500G":3,"BB_LD BRIGHTENER NATURAL60ML":1,"BB_LD DUST FREE BLUE PWDR 500g":1,"BB_GW SYS DEVELOPER 2% 1L - 7 VOL":4,"BB_GW SYS DEVELOPER 3% 1L - 10 VOL":1,"BB_GW SYS DEVELOPER 6% 1L -20 VOL":2};
+
+const initialProducts = [
+  ...['2N','3N','4N','5N','6N','7N','8N','9N','10N','11N','3NN','4NN','5NN','6NN','7NN','8NN','9NN','4NA','5NA','6NA','7NA','8NA','9NA','2A','5A','6A','7A','8A','9A','10A','11A','6SB','7SB','8SB','5MB','6MB','7MB','4G','6G','7G','8G','9G','9GN','5BG','7BG','5GB','6GB','7GB','8GB','9GB','10GB','5K','6K','7K','8K','8KN','6KG','7KG','8KG','6KR','7OO','5R','6R','5RB','6RB','7RB','7RO','5RR','6RR','7RR','6RV','10V','11V','3VV','5VV','6VV','11SV','4B','5B','6B','7B','8B','7BN','4BP','5BP','6BP','10P','11P','BC','6NP','7NP','9NP','11SN','8CA','9N@BS','9N@BP','8N@KK','8N@GB','8N@BS','7N@BP','7N@BK','6N@GB','5N@BP','5N@BK','7RR@RR','6BP@VA','6VV@Pk','7AK@Pk','8CA@PB','9N@Pk','7BP@Pk','6NN@CV'].map(c=>({id:'TC_'+c.trim(),code:c.trim(),category:'TOPCHIC'})),
+  ...['2A','6A','2N','3N','4N','5N','6N','7N','8N','9N','10N','4NN','5NN','6NN','7NN','8NN','5NA','7NA','9NA','6SB','8SB','5MB','7MB','4G','7G','8G','10G','5BG','7BG','8GB','9GB','5K','6K','8K','6KG','7KG','9KG','6KR','5R','6R','5RB','6RB','7RB','7RR','8OR','10V','5VV','6VV','5B','6B','7B','8BA','9BA','4BP','5BP','6BP','10P','CLEAR','10BA','10BB','10BG','10BS','10BV','10GP','8BV','8BP','10BP','8GP','8CA','6 NATURAL','7 NATURAL','8 NATURAL','7N@BP','6N@GB','5N@BP','7RR@RR','8SB@Pk','6VV@Pk','7AK@Pk','8CA@PB'].map(c=>({id:'CO_'+c.trim(),code:c.trim(),category:'COLORANCE'})),
+  ...['8AV','8V','8BB','9BN','9CP','9PN','9PV','9S','9V','9BB','10B','10BN','10PV','10S','10BC','CLEAR','8BC'].map(c=>({id:'GT_'+c.trim(),code:c.trim(),category:'GLOSS TONES'})),
+  ...['LD SILKLIFT CONTROL PEARL LV 6-8 500G','LD SILKLIFT CLAY','LD SILKLIFT 2 IN 1 SERUM 75ML','LD SILKLIFT 3% COND CREAM DEV 750ML','LD SILKLIFT 6% COND CREAM DEV 750ML','LD SILKLIFT 9% COND CREAM DEV 750ML','LD SILKLIFT STRONG 500G','LD SILKLIFT ZERO AMMONIA 500G','LD BRIGHTENER NATURAL 60ML','LD BRIGHTENER SILVER 60ML','LD DUST FREE BLUE PWDR 500G','LD DUST FREE PWDR 1000G','GW SYS DEVELOPER 2% 1L - 7 VOL','GW SYS DEVELOPER 3% 1L - 10 VOL','GW SYS DEVELOPER 6% 1L - 20 VOL','GW SYS DEVELOPER 9% 1L - 30 VOL','GW SYS DEVELOPER 12% 1L - 40 VOL','STRUCTURE EQUALIZER 150ML','COLOR INTENSIVE SERUM 12X18ML','COLOR ER INTENSIVE SERUM 12X18ML','B&H INTENSIVE SERUM 12X18ML','JS INTENSIVE SERUM 12X18ML','RR INTENSIVE SERUM 12X18ML','UV INTENSIVE SERUM 12X18ML','CW INTENSIVE SERUM 12X18ML'].map(c=>({id:'BB_'+c.trim(),code:c.trim(),category:'BACKBAR'})),
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state = {
+  view: 'empties', category: 'all', week: 0,
+  month: now.getMonth(), year: now.getFullYear(), search: '',
+  products: [], stock: {}, par: {},
+  empties: {}, ordered: {}, onSale: {}, barcodes: {},
+  onDemand: {}, // pid → true — silences all stock alerts
+};
+
+function mKey(pid,y,m)  { return `${pid}|${y}|${m}`; }
+function wKey(pid,y,m,w){ return `${pid}|${y}|${m}|w${w}`; }
+function getMonthEmpties(pid) { return state.empties[mKey(pid,state.year,state.month)] || 0; }
+function getWeekEmpties(pid)  { return state.empties[wKey(pid,state.year,state.month,state.week)] || 0; }
+function getOrdered(pid)      { return state.ordered[mKey(pid,state.year,state.month)] || 0; }
+function getPrevEmpties(pid) {
+  let pm=state.month-1, py=state.year;
+  if(pm<0){pm=11;py--;}
+  return state.empties[mKey(pid,py,pm)] || 0;
+}
+function getStock(pid){ return state.stock[pid] !== undefined ? state.stock[pid] : 0; }
+
+function stockStatus(pid){
+  if(state.onDemand[pid]) return 'ondemand';
+  const oh=getStock(pid), p=state.par[pid];
+  if(p===undefined && !(pid in state.stock)) return 'none';
+  if(oh<=0) return 'out';
+  if(p && oh<=p) return 'low';
+  return 'ok';
+}
+function stockPill(pid){
+  const oh=getStock(pid), s=stockStatus(pid);
+  if(s==='ondemand') return `<span class="stock-pill stock-ondemand">On Demand</span>`;
+  if(s==='none') return `<span class="stock-pill stock-none">—</span>`;
+  if(s==='out')  return `<span class="stock-pill stock-out">OUT</span>`;
+  if(s==='low')  return `<span class="stock-pill stock-low">LOW · ${oh}</span>`;
+  return `<span class="stock-pill stock-ok">${oh}</span>`;
+}
+function getLowProds(){ return state.products.filter(p=>{const s=stockStatus(p.id);return s==='low'||s==='out';}); }
+function toggleOnDemand(pid){
+  if(state.onDemand[pid]) delete state.onDemand[pid];
+  else state.onDemand[pid]=true;
+  saveState(); updateLowBadge(); render();
+}
+function updateLowBadge(){
+  const n=getLowProds().length, b=document.getElementById('low-badge');
+  if(b){b.textContent=n;b.style.display=n?'inline':'none';}
+  const saleCount=state.products.filter(p=>isSale(p.id)).length;
+  const sb=document.getElementById('sale-badge');
+  if(sb){sb.textContent=saleCount;sb.style.display=saleCount?'inline':'none';}
+}
+
+function saveState(){
+  localStorage.setItem('salonTracker_v3', JSON.stringify({
+    products:state.products, stock:state.stock, par:state.par,
+    empties:state.empties, ordered:state.ordered, onSale:state.onSale,
+    barcodes:state.barcodes, onDemand:state.onDemand,
+    month:state.month, year:state.year,
+  }));
+}
+function loadState(){
+  try {
+    const saved = localStorage.getItem('salonTracker_v3');
+    if(saved){
+      const p=JSON.parse(saved);
+      state.products = p.products || initialProducts;
+      state.stock    = Object.assign({},importedStock, p.stock||{});
+      state.par      = p.par||{};
+      state.empties  = p.empties||{};
+      state.ordered  = p.ordered||{};
+      state.onSale   = p.onSale||{};
+      state.barcodes = p.barcodes||{};
+      state.onDemand = p.onDemand||{};
+      state.month    = p.month!==undefined?p.month:now.getMonth();
+      state.year     = p.year!==undefined?p.year:now.getFullYear();
+    } else {
+      state.products=initialProducts;
+      state.stock=Object.assign({},importedStock);
+      state.par={}; state.empties={}; state.ordered={}; state.onSale={}; state.barcodes={}; state.onDemand={};
+    }
+    // Seed March 2026 imported data if not already present
+    for(const[k,v] of Object.entries(importedEmpties)){
+      const mk=mKey(k,2026,2); if(!state.empties[mk]) state.empties[mk]=v;
+    }
+    for(const[k,v] of Object.entries(importedOrdered)){
+      const mk=mKey(k,2026,2); if(!state.ordered[mk]) state.ordered[mk]=v;
+    }
+  } catch(e){
+    state.products=initialProducts; state.stock=Object.assign({},importedStock);
+    state.par={}; state.empties={}; state.ordered={}; state.onSale={}; state.barcodes={}; state.onDemand={};
+  }
+}
+
+function isSale(pid){
+  const s=state.onSale[pid];
+  return s && s.month===state.month && s.year===state.year;
+}
+function toggleSale(pid){
+  if(isSale(pid)) delete state.onSale[pid];
+  else state.onSale[pid]={month:state.month,year:state.year};
+  saveState(); render();
+}
+
+function prevMonth(){ if(state.month===0){state.month=11;state.year--;}else state.month--; render(); }
+function nextMonth(){ if(state.month===11){state.month=0;state.year++;}else state.month++; render(); }
+function renderEmpties(){
+  const {category,week,month,year,search}=state;
+  const isLow=category==='lowstock';
+  const isSaleView=category==='onsale';
+  let prods=isLow?getLowProds():isSaleView?state.products.filter(p=>isSale(p.id)):state.products.filter(p=>category==='all'||p.category===category);
+  if(search){const q=search.toLowerCase();prods=prods.filter(p=>p.code.toLowerCase().includes(q));}
+
+  const totalEmpties=state.products.reduce((s,p)=>s+getMonthEmpties(p.id),0);
+  const weekEmpties =state.products.reduce((s,p)=>s+getWeekEmpties(p.id),0);
+  const totalOrdered=state.products.reduce((s,p)=>s+getOrdered(p.id),0);
+  const lowCount=getLowProds().length;
+  const saleCount=state.products.filter(p=>isSale(p.id)).length;
+
+  let html=`
+    <div class="section-header">
+      <div>
+        <div class="section-title">${isLow?'⚠️ Low Stock':isSaleView?'🏷 On Sale This Month':'📦 Log Empties'}</div>
+        <div class="section-sub">${MONTHS[month]} ${year} · ${isSaleView?'Mark items from Karen\'s flyer to bulk order':'Tap + for each empty tube pulled from the bin'}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="openScanModal('empty')">📷 Scan Empty</button>
+        <button class="btn btn-blue" onclick="openReceiveModal()">📬 Receive Order</button>
+        <button class="btn btn-gold" onclick="commitWeek()">✓ Commit Week ${week+1}</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Month Empties</div><div class="stat-value red">${totalEmpties}</div><div class="stat-sub">tubes consumed</div></div>
+      <div class="stat-card"><div class="stat-label">Week ${week+1} Empties</div><div class="stat-value gold">${weekEmpties}</div><div class="stat-sub">logged this week</div></div>
+      <div class="stat-card"><div class="stat-label">Ordered</div><div class="stat-value green">${totalOrdered}</div><div class="stat-sub">received from Goldwell</div></div>
+      <div class="stat-card"><div class="stat-label">On Sale</div><div class="stat-value" style="color:var(--amber)">${saleCount}</div><div class="stat-sub">flagged this month</div></div>
+    </div>
+    <div class="week-bar">
+      ${['Week 1','Week 2','Week 3','Week 4'].map((w,i)=>`<button class="week-btn ${i===week?'active':''}" onclick="setWeek(${i})">${w}</button>`).join('')}
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+        <button class="btn btn-outline" style="padding:5px 10px;font-size:11px" onclick="prevMonth()">‹</button>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted)">${MONTHS[month]} ${year}</span>
+        <button class="btn btn-outline" style="padding:5px 10px;font-size:11px" onclick="nextMonth()">›</button>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" placeholder="Search product code..." value="${search}" oninput="state.search=this.value;render()">
+    </div>`;
+
+  const cats=isLow?[...new Set(getLowProds().map(p=>p.category))]:
+    isSaleView?[...new Set(state.products.filter(p=>isSale(p.id)).map(p=>p.category))]:
+    category==='all'?['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR']:[category];
+
+  for(const cat of cats){
+    const catProds=prods.filter(p=>p.category===cat);
+    if(!catProds.length) continue;
+    const ck=cat==='GLOSS TONES'?'GLOSS':cat;
+    html+=`<div style="margin-bottom:6px;display:flex;align-items:center;gap:8px"><span class="cat-chip cat-${ck}">${cat}</span><span style="font-size:11px;color:var(--text-dim)">${catProds.length} products</span></div><div class="bin-grid">`;
+    for(const p of catProds){
+      const wc=getWeekEmpties(p.id), mc=getMonthEmpties(p.id);
+      const oh=getStock(p.id), s=stockStatus(p.id);
+      let si='';
+      if(s==='out') si=`<span style="color:var(--red);font-size:11px;font-weight:500">OUT OF STOCK</span>`;
+      else if(s==='low') si=`<span style="color:var(--amber);font-size:11px">LOW · ${oh} left</span>`;
+      else if(s!=='none') si=`<span style="color:var(--text-muted);font-size:11px">${oh} on hand</span>`;
+      html+=`<div class="bin-card ${wc>0?'has-count':''} ${isSale(p.id)?'on-sale':''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span class="bin-card-code">${p.code}</span>
+          <span style="font-size:10px;color:var(--text-dim);font-family:'DM Mono',monospace">mo:${mc}</span>
+        </div>
+        ${isSale(p.id)?`<div><span class="sale-tag">🏷 on sale</span></div>`:si?`<div>${si}</div>`:'<div style="height:2px"></div>'}
+        <div class="bin-card-controls">
+          <button class="qty-btn red-btn" onclick="logEmpty('${p.id}',-1)">−</button>
+          <span class="bin-count ${wc===0?'zero':''}">${wc===0?'—':wc}</span>
+          <button class="qty-btn red-btn" onclick="logEmpty('${p.id}',1)">+</button>
+        </div>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+  document.getElementById('main-content').innerHTML=html;
+}
+
+// ── VIEW: STOCK TABLE ────────────────────────────────────────────────────────
+function renderStock(){
+  const {category,month,year,search}=state;
+  const isLow=category==='lowstock';
+  const isSaleView=category==='onsale';
+  let prods=isLow?getLowProds():isSaleView?state.products.filter(p=>isSale(p.id)):state.products.filter(p=>category==='all'||p.category===category);
+  if(search){const q=search.toLowerCase();prods=prods.filter(p=>p.code.toLowerCase().includes(q));}
+  const cats=isLow?[...new Set(prods.map(p=>p.category))]:
+    isSaleView?[...new Set(prods.map(p=>p.category))]:
+    category==='all'?['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR']:[category];
+
+  const totalStock=state.products.reduce((s,p)=>s+getStock(p.id),0);
+  const lowCount=getLowProds().length;
+
+  const cartCount = getOrderCartCount();
+  let html=`
+    <div class="section-header">
+      <div><div class="section-title">${isSaleView?'🏷 On Sale This Month':'🗂 Stock Overview'}</div>
+      <div class="section-sub">${MONTHS[month]} ${year} · ${isSaleView?'Mark sale items from Karen\'s flyer':'Edit On Hand and Par levels · add items to order directly'}</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${cartCount>0?`<button class="btn btn-gold" onclick="openPOModal()">📄 View Order <span style="background:rgba(255,255,255,.3);border-radius:10px;padding:1px 7px;font-size:11px;margin-left:2px">${cartCount}</span></button>`:''}
+        <button class="btn btn-outline" onclick="openAddModal()">+ Add Product</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total On Hand</div><div class="stat-value gold">${totalStock}</div><div class="stat-sub">units in stock</div></div>
+      <div class="stat-card"><div class="stat-label">Low / Out</div><div class="stat-value ${lowCount>0?'red':'green'}">${lowCount}</div><div class="stat-sub">below par level</div></div>
+    </div>
+    <div class="search-wrap"><span class="search-icon">🔍</span>
+      <input class="search-input" placeholder="Search product code..." value="${search}" oninput="state.search=this.value;render()">
+    </div>`;
+
+  for(const cat of cats){
+    const cp=prods.filter(p=>p.category===cat);
+    if(!cp.length) continue;
+    const ck=cat==='GLOSS TONES'?'GLOSS':cat;
+    html+=`<div style="margin-bottom:6px;display:flex;align-items:center;gap:8px"><span class="cat-chip cat-${ck}">${cat}</span></div>
+    <div class="table-wrap"><table><thead><tr>
+      <th>Product</th><th>On Hand</th><th>Par Level</th><th>Status</th><th>Month Empties</th><th>Month Ordered</th><th>Sale</th><th style="color:var(--gold)">Order</th>
+    </tr></thead><tbody>`;
+    for(const p of cp){
+      const oh=state.stock[p.id]!==undefined?state.stock[p.id]:'';
+      const par=state.par[p.id]!==undefined?state.par[p.id]:'';
+      const s=stockStatus(p.id);
+      const rb=s==='out'?'background:rgba(192,57,43,.03)':s==='low'?'background:rgba(176,122,16,.03)':isSale(p.id)?'background:rgba(176,122,16,.02)':'';
+      const inOrder = poQtys[p.id] > 0;
+      const saleTagInline = isSale(p.id) ? ' <span class="sale-tag">on sale</span>' : '';
+      const saleToggleLabel = isSale(p.id) ? '🏷 on sale' : 'mark sale';
+      const orderCell = inOrder
+        ? '<div style="display:flex;align-items:center;gap:6px">'
+          + '<button class="qty-btn" style="width:22px;height:22px;font-size:13px" onclick="stockAdjOrder(\'' + p.id + '\',-1)">−</button>'
+          + '<span style="font-family:\'DM Mono\',monospace;font-size:13px;font-weight:600;color:var(--gold);min-width:20px;text-align:center">' + poQtys[p.id] + '</span>'
+          + '<button class="qty-btn" style="width:22px;height:22px;font-size:13px" onclick="stockAdjOrder(\'' + p.id + '\',1)">+</button>'
+          + '</div>'
+        : '<button class="btn btn-outline" style="padding:4px 10px;font-size:11px;color:var(--gold);border-color:rgba(154,111,42,.3)" onclick="stockAdjOrder(\'' + p.id + '\',1)">+ Add to Order</button>';
+      html+=`<tr style="${rb}">
+        <td class="product-code">${p.code}${saleTagInline}</td>
+        <td><input class="num-input" type="number" min="0" value="${oh}" placeholder="—" onchange="setStockDirect('${p.id}',this.value)"></td>
+        <td><input class="num-input" type="number" min="0" value="${par}" placeholder="—" onchange="setPar('${p.id}',this.value)"></td>
+        <td>${stockPill(p.id)}</td>
+        <td><span class="badge ${getMonthEmpties(p.id)?'badge-red':''}">${getMonthEmpties(p.id)||'—'}</span></td>
+        <td><span class="badge ${getOrdered(p.id)?'badge-blue':''}">${getOrdered(p.id)||'—'}</span></td>
+        <td><button class="sale-toggle ${isSale(p.id)?'active':''}" onclick="toggleSale('${p.id}')">${saleToggleLabel}</button></td>
+        <td>${orderCell}</td>
+      </tr>`;
+    }
+    html+=`</tbody></table></div>`;
+  }
+  document.getElementById('main-content').innerHTML=html;
+}
+
+// ── VIEW: INVENTORY SETUP ─────────────────────────────────────────────────────
+function renderSetup(){
+  const {search} = state;
+  const cats = ['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR'];
+  const onDemandCount = state.products.filter(p=>state.onDemand[p.id]).length;
+  const noParCount = state.products.filter(p=>!state.onDemand[p.id] && state.par[p.id]===undefined).length;
+
+  let html = `
+    <div class="section-header">
+      <div>
+        <div class="section-title">⚙️ Inventory Setup</div>
+        <div class="section-sub">Configure how each product behaves — set par levels and mark on-demand items</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">On Demand</div><div class="stat-value" style="color:var(--blue)">${onDemandCount}</div><div class="stat-sub">alerts silenced</div></div>
+      <div class="stat-card"><div class="stat-label">No Par Set</div><div class="stat-value" style="color:var(--amber)">${noParCount}</div><div class="stat-sub">no low stock threshold</div></div>
+      <div class="stat-card"><div class="stat-label">Total Products</div><div class="stat-value">${state.products.length}</div><div class="stat-sub">in inventory</div></div>
+    </div>
+
+    <div style="background:rgba(37,99,168,.06);border:1px solid rgba(37,99,168,.2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--blue);margin-bottom:16px;line-height:1.6">
+      <strong>On Demand</strong> — toggle on for colors that are only mixed for specific clients. Silences all stock alerts.<br>
+      <strong>Par Level</strong> — minimum quantity on hand before a low stock alert triggers. Leave blank for no alert.
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" placeholder="Search product code..." value="${search}" oninput="state.search=this.value;render()">
+    </div>`;
+
+  for(const cat of cats){
+    let prods = state.products.filter(p=>p.category===cat);
+    if(search){ const q=search.toLowerCase(); prods=prods.filter(p=>p.code.toLowerCase().includes(q)); }
+    if(!prods.length) continue;
+    const ck = cat==='GLOSS TONES'?'GLOSS':cat;
+
+    html += `
+      <div style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
+        <span class="cat-chip cat-${ck}">${cat}</span>
+        <span style="font-size:11px;color:var(--text-dim)">${prods.length} products</span>
+      </div>
+      <div class="table-wrap" style="margin-bottom:20px">
+        <table><thead><tr>
+          <th>Product</th>
+          <th>On Hand</th>
+          <th style="color:var(--blue)">On Demand</th>
+          <th>Par Level</th>
+          <th>Alert Status</th>
+        </tr></thead><tbody>`;
+
+    for(const p of prods){
+      const od = !!state.onDemand[p.id];
+      const par = state.par[p.id] !== undefined ? state.par[p.id] : '';
+      const oh = getStock(p.id);
+      const uid = p.id.replace(/[^a-zA-Z0-9]/g,'_');
+      html += `<tr style="${od?'background:rgba(37,99,168,.03)':''}">
+        <td class="product-code">${p.code}</td>
+        <td style="font-family:'DM Mono',monospace;color:var(--text-muted)">${oh}</td>
+        <td>
+          <div class="toggle-wrap">
+            <label class="toggle">
+              <input type="checkbox" ${od?'checked':''} onchange="toggleOnDemand('${p.id}')">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label ${od?'active':''}">${od?'On Demand':'—'}</span>
+          </div>
+        </td>
+        <td>
+          ${od
+            ? `<span style="font-size:12px;color:var(--text-dim)">n/a</span>`
+            : `<input class="num-input" type="number" min="0" value="${par}" placeholder="none"
+                onchange="setPar('${p.id}',this.value)" style="width:60px">`
+          }
+        </td>
+        <td>${stockPill(p.id)}</td>
+      </tr>`;
+    }
+    html += `</tbody></table></div>`;
+  }
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+// ── VIEW: ORDER REPORT ───────────────────────────────────────────────────────
+function renderOrder(){
+  const {month,year}=state;
+  let pm=month-1,py=year; if(pm<0){pm=11;py--;}
+  const cats=['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR'];
+  const activeProds=state.products.filter(p=>getMonthEmpties(p.id)>0||getPrevEmpties(p.id)>0||getOrdered(p.id)>0);
+  const totalSuggest=state.products.reduce((s,p)=>s+getSuggest(p.id),0);
+
+  let html=`
+    <div class="section-header">
+      <div><div class="section-title">📋 Order Report</div>
+      <div class="section-sub">${MONTHS[month]} ${year} · Suggested order based on ${state.products.some(p=>getPrevEmpties(p.id)>0) ? MONTHS[pm]+' '+py+' consumption' : MONTHS[month]+' '+year+' empties (no prior month data yet)'}</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-gold" onclick="openPOModal()">📄 Generate Purchase Order</button>
+        <button class="btn btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Suggested Order</div><div class="stat-value gold">${totalSuggest}</div><div class="stat-sub">total units</div></div>
+      <div class="stat-card"><div class="stat-label">Based on</div><div class="stat-value" style="font-size:16px;margin-top:4px">${MONTHS[pm]} ${py}</div><div class="stat-sub">actual empties</div></div>
+      <div class="stat-card"><div class="stat-label">Already Ordered</div><div class="stat-value green">${state.products.reduce((s,p)=>s+getOrdered(p.id),0)}</div><div class="stat-sub">this month</div></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:16px">
+      <button class="btn btn-outline" style="padding:5px 10px;font-size:11px" onclick="prevMonth()">‹</button>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted)">${MONTHS[month]} ${year}</span>
+      <button class="btn btn-outline" style="padding:5px 10px;font-size:11px" onclick="nextMonth()">›</button>
+    </div>`;
+
+  if(!activeProds.length){
+    html+=`<div class="empty-state">No data for this month yet.<br><span style="font-size:12px">Log empties on the Log Empties tab to generate a report.</span></div>`;
+  } else {
+    for(const cat of cats){
+      const cp=activeProds.filter(p=>p.category===cat);
+      if(!cp.length) continue;
+      const ck=cat==='GLOSS TONES'?'GLOSS':cat;
+      html+=`<div style="margin-bottom:6px;display:flex;align-items:center;gap:8px"><span class="cat-chip cat-${ck}">${cat}</span></div>
+      <div class="table-wrap"><table><thead><tr>
+        <th>Product</th><th>On Hand</th>
+        <th style="color:var(--text-muted)">${MONTHS[pm]} Empties</th>
+        <th style="color:var(--red)">${MONTHS[month]} Empties</th>
+        <th style="color:var(--blue)">${MONTHS[month]} Ordered</th>
+        <th style="color:var(--gold)">Suggested Order</th>
+      </tr></thead><tbody>`;
+      for(const p of cp){
+        const suggest=getSuggest(p.id);
+        html+=`<tr>
+          <td class="product-code">${p.code}</td>
+          <td>${stockPill(p.id)}</td>
+          <td style="font-family:'DM Mono',monospace;color:var(--text-muted)">${getPrevEmpties(p.id)||'—'}</td>
+          <td><span class="badge ${getMonthEmpties(p.id)?'badge-red':''}">${getMonthEmpties(p.id)||'—'}</span></td>
+          <td><span class="badge ${getOrdered(p.id)?'badge-blue':''}">${getOrdered(p.id)||'—'}</span></td>
+          <td><span class="badge badge-gold">${suggest}</span></td>
+        </tr>`;
+      }
+      html+=`</tbody></table></div>`;
+    }
+  }
+  document.getElementById('main-content').innerHTML=html;
+}
+
+function getSuggest(pid){
+  // Use last month's empties as the base (what was actually consumed)
+  // Fall back to current month's empties if no previous month data yet
+  const prevE = getPrevEmpties(pid);
+  const currE = getMonthEmpties(pid);
+  const base = prevE > 0 ? prevE : currE;
+  // Plus any gap to bring on hand back up to par
+  const gap = Math.max(0,(state.par[pid]||0)-getStock(pid));
+  return base + gap;
+}
+
+// ── CORE ACTIONS ─────────────────────────────────────────────────────────────
+function logEmpty(pid, delta){
+  const wk=wKey(pid,state.year,state.month,state.week);
+  const mk=mKey(pid,state.year,state.month);
+  const curW=state.empties[wk]||0;
+  const newW=Math.max(0,curW+delta);
+  const diff=newW-curW;
+  if(diff===0) return;
+
+  state.empties[wk]=newW;
+  state.empties[mk]=Math.max(0,(state.empties[mk]||0)+diff);
+
+  // Live on-hand update: empties subtract from stock
+  state.stock[pid]=Math.max(0,getStock(pid)-diff);
+
+  saveState();
+  render();
+  const code=state.products.find(p=>p.id===pid)?.code||pid;
+  if(diff>0) showToast(`📦 ${code} — empty logged · ${state.stock[pid]} remaining`);
+}
+
+function commitWeek(){
+  const count=state.products.reduce((s,p)=>s+(state.empties[wKey(p.id,state.year,state.month,state.week)]||0),0);
+  showToast(`✓ Week ${state.week+1} committed · ${count} empties saved`);
+}
+
+function setStockDirect(pid,val){
+  const n=parseInt(val);
+  if(isNaN(n)||val==='') delete state.stock[pid]; else state.stock[pid]=Math.max(0,n);
+  saveState(); updateLowBadge();
+}
+function setPar(pid,val){
+  const n=parseInt(val);
+  if(isNaN(n)||val==='') delete state.par[pid]; else state.par[pid]=Math.max(0,n);
+  saveState(); updateLowBadge();
+}
+
+function setWeek(w){state.week=w;render();}
+function setCategory(cat,el){
+  state.category=cat;
+  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function switchView(v){
+  state.view=v;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['empties','stock','order','setup'][i]===v));
+  render();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render(){
+  if     (state.view==='empties') renderEmpties();
+  else if(state.view==='stock')   renderStock();
+  else if(state.view==='setup')   renderSetup();
+  else                            renderOrder();
+  updateLowBadge();
+}
+function prevMonth(){ if(state.month===0){state.month=11;state.year--;}else state.month--; render(); }
+function nextMonth(){ if(state.month===11){state.month=0;state.year++;}else state.month++; render(); }
+
+// ── RECEIVE ORDER ─────────────────────────────────────────────────────────────
+let receiveQtys={};
+function openReceiveModal(){
+  receiveQtys={};
+  document.getElementById('receive-modal').style.display='flex';
+  document.getElementById('receive-search').value='';
+  renderReceiveList('');
+}
+function closeReceiveModal(){ document.getElementById('receive-modal').style.display='none'; }
+function renderReceiveList(filter){
+  const q=filter.toLowerCase();
+  const prods=state.products.filter(p=>!q||p.code.toLowerCase().includes(q)).slice(0,100);
+  document.getElementById('receive-list').innerHTML = prods.map(p=>{
+    const qty=receiveQtys[p.id]||0;
+    return `<div class="receive-item">
+      <div>
+        <div class="product-code" style="font-size:13px">${p.code}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${p.category} · ${getStock(p.id)} on hand</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <button class="qty-btn" style="border-color:rgba(37,99,168,.25);color:var(--blue);background:rgba(37,99,168,.06)" onclick="adjReceive('${p.id}',-1)">−</button>
+        <span id="rq-${p.id}" style="font-family:'DM Mono',monospace;font-size:15px;min-width:24px;text-align:center;font-weight:600;color:${qty>0?'var(--blue)':'var(--text-dim)'}">${qty||'—'}</span>
+        <button class="qty-btn" style="border-color:rgba(37,99,168,.25);color:var(--blue);background:rgba(37,99,168,.06)" onclick="adjReceive('${p.id}',1)">+</button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="padding:16px;text-align:center;color:var(--text-dim)">No products found</div>';
+}
+function adjReceive(pid,delta){
+  receiveQtys[pid]=Math.max(0,(receiveQtys[pid]||0)+delta);
+  const el=document.getElementById('rq-'+pid);
+  if(el){el.textContent=receiveQtys[pid]||'—';el.style.color=receiveQtys[pid]>0?'var(--blue)':'var(--text-dim)';}
+}
+function confirmReceiveOrder(){
+  let count=0;
+  for(const[pid,qty] of Object.entries(receiveQtys)){
+    if(qty<=0) continue;
+    state.stock[pid]=(state.stock[pid]||0)+qty;
+    const mk=mKey(pid,state.year,state.month);
+    state.ordered[mk]=(state.ordered[mk]||0)+qty;
+    count++;
+  }
+  saveState(); closeReceiveModal();
+  showToast(`✓ Order received · ${count} products updated · On Hand adjusted`);
+  render();
+}
+
+// ── ADD PRODUCT ───────────────────────────────────────────────────────────────
+function openAddModal(){ document.getElementById('add-modal').style.display='flex'; }
+function addProduct(){
+  const cat=document.getElementById('new-cat').value;
+  const code=document.getElementById('new-code').value.trim().toUpperCase();
+  if(!code) return;
+  const id=cat.slice(0,2)+'_USR_'+code;
+  if(state.products.find(p=>p.id===id)){showToast('Product already exists');return;}
+  state.products.push({id,code,category:cat});
+  saveState();
+  document.getElementById('add-modal').style.display='none';
+  showToast(`✓ Added ${code} to ${cat}`);
+  render();
+}
+
+// ── MONTHLY ROLLOVER ──────────────────────────────────────────────────────────
+function openRolloverModal(){
+  let nm=state.month+1,ny=state.year; if(nm>11){nm=0;ny++;}
+  document.getElementById('rollover-current').textContent=`${MONTHS[state.month]} ${state.year}`;
+  document.getElementById('rollover-next').textContent=`${MONTHS[nm]} ${ny}`;
+  document.getElementById('rollover-modal').style.display='flex';
+}
+function confirmRollover(){
+  // On Hand is already live — just advance the month
+  if(state.month===11){state.month=0;state.year++;}else state.month++;
+  state.week=0;
+  // Sale flags are month-scoped so they naturally expire — no need to clear
+  document.getElementById('rollover-modal').style.display='none';
+  saveState();
+  showToast(`✓ Now tracking ${MONTHS[state.month]} ${state.year}`);
+  render();
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────────
+function openResetModal(){ document.getElementById('reset-modal').style.display='flex'; }
+function confirmReset(){
+  const scope=document.querySelector('input[name="reset-scope"]:checked').value;
+  if(scope==='all'){
+    state.empties={}; state.ordered={};
+    showToast('✓ All history cleared — stock kept');
+  } else {
+    const y=state.year,m=state.month;
+    for(const k of Object.keys(state.empties)){const pts=k.split('|');if(parseInt(pts[1])===y&&parseInt(pts[2])===m)delete state.empties[k];}
+    for(const k of Object.keys(state.ordered)){const pts=k.split('|');if(parseInt(pts[1])===y&&parseInt(pts[2])===m)delete state.ordered[k];}
+    showToast(`✓ ${MONTHS[m]} ${y} cleared — stock kept`);
+  }
+  saveState();
+  document.getElementById('reset-modal').style.display='none';
+  render();
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const {month,year}=state;
+  let csv=`Product,Category,On Hand,Par,${MONTHS[month]} Empties,Prev Month Empties,${MONTHS[month]} Ordered,Suggested Order\n`;
+  for(const p of state.products){
+    const e=getMonthEmpties(p.id),pe=getPrevEmpties(p.id),o=getOrdered(p.id),s=getSuggest(p.id);
+    if(!e&&!pe&&!o&&!(p.id in state.stock)) continue;
+    csv+=`"${p.code}","${p.category}",${getStock(p.id)},${state.par[p.id]||''},${e},${pe},${o},${s}\n`;
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`vintage_roots_order_${MONTHS[month]}_${year}.csv`;
+  a.click();
+  showToast('✓ CSV exported');
+}
+
+// ── PURCHASE ORDER ────────────────────────────────────────────────────────────
+let poQtys = {};
+
+function openPOModal() {
+  // Build initial quantities from suggested order (only items with qty > 0)
+  poQtys = {};
+  state.products.forEach(p => {
+    const s = getSuggest(p.id);
+    if (s > 0) poQtys[p.id] = s;
+  });
+
+  // Auto-generate PO number: VR-YYYYMM-XXX
+  const d = new Date();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const rand = String(Math.floor(Math.random()*900)+100);
+  document.getElementById('po-number').value = `VR-${d.getFullYear()}${mm}-${rand}`;
+
+  document.getElementById('po-modal').style.display = 'flex';
+  renderPOLines();
+}
+
+function closePOModal() {
+  document.getElementById('po-modal').style.display = 'none';
+}
+
+function renderPOLines() {
+  const cats = ['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR'];
+  let html = '';
+  let total = 0;
+
+  for (const cat of cats) {
+    // Include products that have a suggestion OR were manually added (poQtys entry > 0)
+    const prods = state.products.filter(p => p.category === cat && (getSuggest(p.id) > 0 || (poQtys[p.id] || 0) > 0));
+    if (!prods.length) continue;
+
+    html += `<div class="po-cat-header">${cat}</div>`;
+    for (const p of prods) {
+      const qty = poQtys[p.id] !== undefined ? poQtys[p.id] : getSuggest(p.id);
+      const sale = isSale(p.id);
+      const isManual = getSuggest(p.id) === 0 && (poQtys[p.id] || 0) > 0;
+      total += qty;
+      const saleTag    = sale     ? '<span class="sale-tag">on sale</span>' : '';
+      const manualTag  = isManual ? '<span style="font-size:10px;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);padding:1px 6px;border-radius:10px">added manually</span>' : '';
+      const saleNote   = sale     ? '<div class="po-sale-note">On sale this month — consider stocking up</div>' : '';
+      const inputStyle = sale     ? 'border-color:var(--amber);color:var(--amber);font-weight:700;' : '';
+      const suggLabel  = isManual ? '' : '(sugg: ' + getSuggest(p.id) + ')';
+      html += `<div class="po-line ${sale?'po-line-sale':''}${isManual?' po-line-manual':''}">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="po-line-code">${p.code}</span>
+            ${saleTag}${manualTag}
+          </div>
+          ${saleNote}
+        </div>
+        <span class="po-line-suggest">${suggLabel}</span>
+        <input class="po-qty-input" type="number" min="0" value="${qty}"
+          oninput="updatePOQty('${p.id}', this.value)"
+          style="${inputStyle}">
+      </div>`;
+    }
+  }
+
+  if (!html) {
+    html = '<div style="padding:24px;text-align:center;color:var(--text-dim)">No suggested orders this month.<br><span style="font-size:12px">Log empties to generate order quantities.</span></div>';
+  }
+
+  document.getElementById('po-lines').innerHTML = html;
+  document.getElementById('po-total-display').textContent = total;
+}
+
+function updatePOQty(pid, val) {
+  const n = parseInt(val);
+  poQtys[pid] = isNaN(n) ? 0 : Math.max(0, n);
+  const total = Object.values(poQtys).reduce((s,v) => s + (v||0), 0);
+  document.getElementById('po-total-display').textContent = total;
+}
+
+function stockAdjOrder(pid, delta) {
+  poQtys[pid] = Math.max(0, (poQtys[pid] || 0) + delta);
+  if (poQtys[pid] === 0) delete poQtys[pid];
+  const code = state.products.find(p=>p.id===pid)?.code || pid;
+  const count = Object.keys(poQtys).length;
+  if (delta > 0) showToast(`✓ ${code} added to order · ${count} item${count!==1?'s':''} in order`);
+  render();
+}
+
+function getOrderCartCount() {
+  return Object.values(poQtys).filter(v => v > 0).length;
+}
+
+function renderPOAddResults(query) {
+  const box = document.getElementById('po-add-results');
+  if (!query.trim()) { box.style.display='none'; return; }
+  const q = query.toLowerCase();
+  const matches = state.products.filter(p => p.code.toLowerCase().includes(q)).slice(0, 12);
+  if (!matches.length) { box.style.display='none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = matches.map(p => {
+    const already = poQtys[p.id] > 0;
+    const ck = p.category==='GLOSS TONES'?'GLOSS':p.category;
+    const alreadyTag = already ? '<span style="margin-left:6px;font-size:11px;color:var(--green)">✓ in order (' + poQtys[p.id] + ')</span>' : '';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border)">'
+      + '<div><span style="font-family:\'DM Mono\',monospace;font-size:13px;font-weight:500">' + p.code + '</span>'
+      + '<span class="cat-chip cat-' + ck + '" style="margin-left:8px">' + p.category + '</span>'
+      + alreadyTag + '</div>'
+      + '<button class="btn btn-outline" style="padding:4px 12px;font-size:12px" onclick="addToPO(\'' + p.id + '\')">+ Add</button>'
+      + '</div>';
+  }).join('') || '<div style="padding:16px;text-align:center;color:var(--text-dim)">No products found</div>';
+}
+
+function addToPO(pid) {
+  // If already in order, increment by 1; otherwise start at 1
+  poQtys[pid] = (poQtys[pid] || 0) + 1;
+  // Clear search
+  document.getElementById('po-add-search').value = '';
+  document.getElementById('po-add-results').style.display = 'none';
+  // Re-render lines so the item appears
+  renderPOLines();
+  const code = state.products.find(p=>p.id===pid)?.code || pid;
+  showToast(`✓ ${code} added to order`);
+}
+
+function printPO() {
+  const salon   = document.getElementById('po-salon').value || 'Vintage Roots Hair Salon';
+  const address = document.getElementById('po-address').value || '';
+  const account = document.getElementById('po-account').value || '';
+  const poNum   = document.getElementById('po-number').value || '';
+  const today   = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const {month, year} = state;
+
+  const cats = ['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR'];
+  let tableRows = '';
+  let grandTotal = 0;
+
+  for (const cat of cats) {
+    const prods = state.products.filter(p => p.category === cat && (poQtys[p.id] || 0) > 0);
+    if (!prods.length) continue;
+
+    tableRows += `<tr class="cat-row"><td colspan="5">${cat}</td></tr>`;
+    for (const p of prods) {
+      const qty = poQtys[p.id] || 0;
+      const sale = isSale(p.id);
+      grandTotal += qty;
+      tableRows += `<tr>
+        <td style="font-family:'DM Mono',monospace;font-weight:500;padding-left:20px">${p.code}</td>
+        <td style="color:#7a7068;font-size:12px">${p.category}</td>
+        <td style="color:#7a7068;font-size:12px;text-align:right">${getStock(p.id)}</td>
+        <td style="text-align:center">${sale?'<span style="background:#FAEEDA;color:#633806;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600">ON SALE</span>':''}</td>
+        <td class="po-print-qty">${qty}</td>
+      </tr>`;
+    }
+  }
+
+  const printHTML = `
+    <div class="po-print-header">
+      <div>
+        <div class="po-print-title">Purchase Order</div>
+        <div class="po-print-sub">Goldwell Color Supply</div>
+      </div>
+      <div class="po-print-meta">
+        <strong>${salon}</strong>
+        ${address ? `<span>${address}</span><br>` : ''}
+        ${account ? `<span>Account: <strong>${account}</strong></span><br>` : ''}
+        <span>PO #: <strong>${poNum}</strong></span><br>
+        <span>Date: ${today}</span><br>
+        <span>Period: ${MONTHS[month]} ${year}</span>
+      </div>
+    </div>
+
+    <div class="po-print-from-to">
+      <div>
+        <div class="po-from-label">Bill To / Ship To</div>
+        <strong>${salon}</strong><br>
+        ${address ? address + '<br>' : ''}
+        ${account ? 'Goldwell Account: ' + account : ''}
+      </div>
+      <div>
+        <div class="po-to-label">Supplier / Rep</div>
+        <strong>Goldwell North America</strong><br>
+        Kao USA Inc. — Professional Hair Care Division<br>
+        <span style="display:inline-block;margin-top:4px;background:#FAEEDA;color:#633806;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px">Attn: Karen</span>
+      </div>
+    </div>
+
+    <table class="po-print-table">
+      <thead>
+        <tr>
+          <th>Product Code</th>
+          <th>Category</th>
+          <th style="text-align:right">On Hand</th>
+          <th style="text-align:center">Sale</th>
+          <th style="text-align:right">Order Qty</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+
+    <div class="po-print-footer">
+      <div>
+        <div class="po-sig-line">Authorized Signature</div>
+        <div class="po-sig-line">Date</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:#7a7068;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Total Units Ordered</div>
+        <div class="po-print-total">${grandTotal}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('po-print-content').innerHTML = printHTML;
+  window.print();
+}
+
+// ── BARCODE SCANNER ───────────────────────────────────────────────────────────
+let scanMode = 'empty'; // 'empty' or 'receive'
+let scanPendingBarcode = null;
+let scanPendingPid = null;
+let scannerRunning = false;
+
+function openScanModal(mode) {
+  scanMode = mode || 'empty';
+  scanPendingBarcode = null;
+  scanPendingPid = null;
+  document.getElementById('scan-modal').style.display = 'flex';
+  document.getElementById('scan-modal-title').textContent = mode === 'receive' ? '📷 Scan to Receive' : '📷 Scan Empty Tube';
+  document.getElementById('scan-result').style.display = 'none';
+  document.getElementById('scan-assign').style.display = 'none';
+  document.getElementById('scan-confirm-btn').style.display = 'none';
+  document.getElementById('scan-manual-input').value = '';
+  document.getElementById('scan-start-btn').style.display = 'block';
+  document.getElementById('scan-line').style.display = 'none';
+}
+
+function closeScanModal() {
+  stopScanner();
+  document.getElementById('scan-modal').style.display = 'none';
+}
+
+function startScanner() {
+  if (!window.Quagga) { showToast('Scanner library not loaded — use manual entry'); return; }
+  document.getElementById('scan-placeholder').style.display = 'none';
+  document.getElementById('scan-start-btn').style.display = 'none';
+  document.getElementById('scan-line').style.display = 'block';
+
+  Quagga.init({
+    inputStream: {
+      name: 'Live',
+      type: 'LiveStream',
+      target: document.getElementById('scan-viewport'),
+      constraints: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 240 } },
+    },
+    decoder: { readers: ['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader'] },
+    locate: true,
+  }, function(err) {
+    if (err) {
+      showToast('Camera not available — use manual entry below');
+      document.getElementById('scan-placeholder').style.display = 'block';
+      document.getElementById('scan-start-btn').style.display = 'block';
+      document.getElementById('scan-line').style.display = 'none';
+      return;
+    }
+    Quagga.start();
+    scannerRunning = true;
+  });
+
+  Quagga.onDetected(function(result) {
+    const code = result.codeResult.code;
+    if (!code) return;
+    stopScanner();
+    handleScannedCode(code);
+  });
+}
+
+function stopScanner() {
+  if (scannerRunning && window.Quagga) {
+    try { Quagga.stop(); } catch(e) {}
+    scannerRunning = false;
+  }
+  const vp = document.getElementById('scan-viewport');
+  const video = vp ? vp.querySelector('video') : null;
+  if (video) video.remove();
+  const canvas = vp ? vp.querySelectorAll('canvas') : [];
+  canvas.forEach(c => c.remove());
+  const ph = document.getElementById('scan-placeholder');
+  if (ph) ph.style.display = 'block';
+  const sl = document.getElementById('scan-line');
+  if (sl) sl.style.display = 'none';
+  const sb = document.getElementById('scan-start-btn');
+  if (sb) sb.style.display = 'block';
+}
+
+function scanLookup(val) {
+  if (!val.trim()) {
+    document.getElementById('scan-result').style.display = 'none';
+    document.getElementById('scan-assign').style.display = 'none';
+    document.getElementById('scan-confirm-btn').style.display = 'none';
+    return;
+  }
+  handleScannedCode(val.trim());
+}
+
+function handleScannedCode(code) {
+  scanPendingBarcode = code;
+  scanPendingPid = null;
+
+  // 1. Check barcode registry
+  if (state.barcodes[code]) {
+    scanPendingPid = state.barcodes[code];
+    showScanMatch(scanPendingPid, code, false);
+    return;
+  }
+
+  // 2. Try direct code match (case-insensitive)
+  const q = code.trim().toUpperCase();
+  const direct = state.products.find(p => p.code.toUpperCase() === q);
+  if (direct) {
+    scanPendingPid = direct.id;
+    showScanMatch(direct.id, code, false);
+    return;
+  }
+
+  // 3. Unknown — ask user to assign
+  showScanUnknown(code);
+}
+
+function showScanMatch(pid, barcode, isNewAssignment) {
+  const p = state.products.find(p => p.id === pid);
+  if (!p) return;
+  const ck = p.category === 'GLOSS TONES' ? 'GLOSS' : p.category;
+  const oh = getStock(pid);
+  const box = document.getElementById('scan-result');
+  box.style.display = 'block';
+  box.style.background = 'rgba(45,122,82,0.08)';
+  box.style.border = '1px solid rgba(45,122,82,0.25)';
+  box.innerHTML = '<div style="display:flex;align-items:center;gap:10px">'
+    + '<span style="font-size:20px">✓</span>'
+    + '<div><div style="font-family:\'DM Mono\',monospace;font-size:16px;font-weight:600;color:var(--text)">' + p.code + '</div>'
+    + '<div style="font-size:12px;color:var(--text-muted);margin-top:2px">' + p.category + ' · ' + oh + ' on hand'
+    + (isNewAssignment ? ' · <span style="color:var(--green)">barcode saved!</span>' : '') + '</div></div>'
+    + '<span class="cat-chip cat-' + ck + '" style="margin-left:auto">' + p.category + '</span></div>';
+  document.getElementById('scan-assign').style.display = 'none';
+  document.getElementById('scan-confirm-btn').style.display = 'inline-flex';
+  document.getElementById('scan-confirm-btn').textContent = scanMode === 'receive' ? '✓ Add to Receive' : '✓ Log as Empty';
+}
+
+function showScanUnknown(code) {
+  const box = document.getElementById('scan-result');
+  box.style.display = 'block';
+  box.style.background = 'rgba(176,122,16,0.08)';
+  box.style.border = '1px solid rgba(176,122,16,0.25)';
+  box.innerHTML = '<div style="color:var(--amber);font-size:13px">⚠️ Unknown barcode: <strong style="font-family:\'DM Mono\',monospace">' + code + '</strong><br>'
+    + '<span style="font-size:11px;color:var(--text-muted)">Search below to link this barcode to a product — it will be remembered.</span></div>';
+  document.getElementById('scan-assign').style.display = 'block';
+  document.getElementById('scan-confirm-btn').style.display = 'none';
+  document.getElementById('scan-assign-search').value = '';
+  renderScanAssignList('');
+}
+
+function renderScanAssignList(query) {
+  const q = (query||'').toLowerCase();
+  const matches = state.products.filter(p => !q || p.code.toLowerCase().includes(q)).slice(0, 15);
+  document.getElementById('scan-assign-list').innerHTML = matches.map(p => {
+    const ck = p.category === 'GLOSS TONES' ? 'GLOSS' : p.category;
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer" onclick="assignBarcode(\'' + p.id + '\')">'
+      + '<span style="font-family:\'DM Mono\',monospace;font-size:13px;font-weight:500">' + p.code + '</span>'
+      + '<span class="cat-chip cat-' + ck + '">' + p.category + '</span>'
+      + '</div>';
+  }).join('') || '<div style="padding:12px;color:var(--text-dim);font-size:12px;text-align:center">No products found</div>';
+}
+
+function assignBarcode(pid) {
+  if (scanPendingBarcode) {
+    state.barcodes[scanPendingBarcode] = pid;
+    saveState();
+  }
+  scanPendingPid = pid;
+  showScanMatch(pid, scanPendingBarcode, true);
+}
+
+function confirmScan() {
+  if (!scanPendingPid) return;
+  if (scanMode === 'empty') {
+    logEmpty(scanPendingPid, 1);
+    const code = state.products.find(p => p.id === scanPendingPid)?.code || '';
+    closeScanModal();
+    showToast('📦 ' + code + ' logged as empty');
+  } else {
+    // receive mode — add 1 to receive qtys
+    receiveQtys[scanPendingPid] = (receiveQtys[scanPendingPid] || 0) + 1;
+    const code = state.products.find(p => p.id === scanPendingPid)?.code || '';
+    const el = document.getElementById('rq-' + scanPendingPid);
+    if (el) { el.textContent = receiveQtys[scanPendingPid]; el.style.color = 'var(--blue)'; }
+    closeScanModal();
+    showToast('📬 ' + code + ' +1 added to receive');
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
