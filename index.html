@@ -574,7 +574,11 @@ function saveState(){
 }
 
 function applyParsedState(p){
-  state.products = p.products || initialProducts;
+  // Merge: start with saved products, then add any new ones from initialProducts
+  const saved = p.products || [];
+  const savedIds = new Set(saved.map(x=>x.id));
+  const newProds = initialProducts.filter(x=>!savedIds.has(x.id));
+  state.products = saved.concat(newProds);
   state.stock    = Object.assign({},importedStock, p.stock||{});
   state.par      = p.par||{};
   state.empties  = p.empties||{};
