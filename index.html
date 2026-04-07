@@ -223,6 +223,7 @@ select { background:var(--surface2); border:1px solid var(--border); border-radi
     <div class="nav-item" id="nav-COLORANCE" onclick="setCategory('COLORANCE',this)">Colorance</div>
     <div class="nav-item" id="nav-GLOSSTONES" onclick="setCategory('GLOSS TONES',this)">Gloss Tones</div>
     <div class="nav-item" id="nav-BACKBAR" onclick="setCategory('BACKBAR',this)">Backbar</div>
+    <div class="nav-item nav-item-alert" id="nav-outofstock" onclick="setCategory('outofstock',this)">Out of Stock <span class="nav-badge" id="out-badge" style="display:none;background:var(--red)">0</span></div>
     <div class="nav-item nav-item-alert" id="nav-lowstock" onclick="setCategory('lowstock',this)">⚠️ Low Stock <span class="nav-badge" id="low-badge" style="display:none">0</span></div>
     <div class="nav-item" id="nav-onsale" onclick="setCategory('onsale',this)">On Sale <span class="nav-badge" id="sale-badge" style="display:none;background:var(--amber)">0</span></div>
     <hr class="divider">
@@ -488,14 +489,14 @@ function idbClear(){
 }
 
 // ── IMPORTED DATA (cleared for fresh April 2026 start) ──────────────────────
-const importedStock   = {"TC_2N":0,"TC_3N":0,"TC_4N":0,"TC_5N":0,"TC_6N":0,"TC_7N":0,"TC_8N":0,"TC_9N":0,"TC_10N":0,"TC_11N":0,"TC_3NN":0,"TC_4NN":0,"TC_5NN":0,"TC_6NN":0,"TC_7NN":0,"TC_8NN":0,"TC_9NN":0,"TC_4NA":0,"TC_5NA":0,"TC_6NA":0,"TC_7NA":0,"TC_8NA":0,"TC_9NA":0,"TC_2A":0,"TC_5A":0,"TC_6A":0,"TC_7A":0,"TC_8A":0,"TC_9A":0,"TC_10A":0,"TC_11A":0,"TC_6SB":0,"TC_7SB":0,"TC_8SB":0,"TC_5MB":0,"TC_6MB":0,"TC_7MB":0,"TC_4G":0,"TC_6G":0,"TC_7G":0,"TC_8G":0,"TC_9G":0,"TC_9GN":0,"TC_5BG":0,"TC_7BG":0,"TC_5GB":0,"TC_6GB":0,"TC_7GB":0,"TC_8GB":0,"TC_9GB":0,"TC_10GB":0,"TC_5K":0,"TC_6K":0,"TC_7K":0,"TC_8K":0,"TC_8KN":0,"TC_6KG":0,"TC_7KG":0,"TC_8KG":0,"TC_6KR":0,"TC_7OO":0,"TC_5R":0,"TC_6R":0,"TC_5RB":0,"TC_6RB":0,"TC_7RB":0,"TC_7RO":0,"TC_5RR":0,"TC_6RR":0,"TC_7RR":0,"TC_6RV":0,"TC_10V":0,"TC_11V":0,"TC_3VV":0,"TC_5VV":0,"TC_6VV":0,"TC_11SV":0,"TC_4B":0,"TC_5B":0,"TC_6B":0,"TC_7B":0,"TC_8B":0,"TC_7BN":0,"TC_4BP":0,"TC_5BP":0,"TC_6BP":0,"TC_10P":0,"TC_11P":0,"TC_BC":0,"TC_6NP":0,"TC_7NP":0,"TC_9NP":0,"TC_11SN":0,"TC_8CA":0,"TC_9N@BS":0,"TC_9N@BP":0,"TC_8N@KK":0,"TC_8N@GB":0,"TC_8N@BS":0,"TC_7N@BP":0,"TC_7N@BK":0,"TC_6N@GB":0,"TC_5N@BP":0,"TC_5N@BK":0,"TC_7RR@RR":0,"TC_6BP@VA":0,"TC_6VV@Pk":0,"TC_7AK@Pk":0,"TC_8CA@PB":0,"TC_9N@Pk":0,"TC_7BP@Pk":0,"TC_6NN@CV":0,"CO_2A":0,"CO_6A":0,"CO_2N":0,"CO_3N":0,"CO_4N":0,"CO_5N":0,"CO_6N":0,"CO_7N":0,"CO_8N":0,"CO_9N":0,"CO_10N":0,"CO_4NN":0,"CO_5NN":0,"CO_6NN":0,"CO_7NN":0,"CO_8NN":0,"CO_5NA":0,"CO_7NA":0,"CO_9NA":0,"CO_6SB":0,"CO_8SB":0,"CO_5MB":0,"CO_7MB":0,"CO_4G":0,"CO_7G":0,"CO_8G":0,"CO_10G":0,"CO_5BG":0,"CO_7BG":0,"CO_8GB":0,"CO_9GB":0,"CO_5K":0,"CO_6K":0,"CO_8K":0,"CO_6KG":0,"CO_7KG":0,"CO_9KG":0,"CO_6KR":0,"CO_5R":0,"CO_6R":0,"CO_5RB":0,"CO_6RB":0,"CO_7RB":0,"CO_7RR":0,"CO_8OR":0,"CO_10V":0,"CO_5VV":0,"CO_6VV":0,"CO_5B":0,"CO_6B":0,"CO_7B":0,"CO_8BA":0,"CO_9BA":0,"CO_4BP":0,"CO_5BP":0,"CO_6BP":0,"CO_10P":0,"CO_CLEAR":0,"CO_10BA":0,"CO_10BB":0,"CO_10BG":0,"CO_10BS":0,"CO_10BV":0,"CO_10GP":0,"CO_8BV":0,"CO_8BP":0,"CO_10BP":0,"CO_8GP":0,"CO_8CA":0,"CO_6 NATURAL":0,"CO_7 NATURAL":0,"CO_8 NATURAL":0,"CO_7N@BP":0,"CO_6N@GB":0,"CO_5N@BP":0,"CO_7RR@RR":0,"CO_8SB@Pk":0,"CO_6VV@Pk":0,"CO_7AK@Pk":0,"CO_8CA@PB":0,"GT_8AV":0,"GT_8V":0,"GT_8BB":0,"GT_9BN":0,"GT_9CP":0,"GT_9PN":0,"GT_9PV":0,"GT_9S":0,"GT_9V":0,"GT_9BB":0,"GT_10B":0,"GT_10BN":0,"GT_10PV":0,"GT_10S":0,"GT_10BC":0,"GT_CLEAR":0,"GT_8BC":0,"BB_SILKLIFT":0,"BB_LD SILKLIFT CONTROL PEARL LV 6-8 500G":0,"BB_LD SILKLIFT CLAY":0,"BB_LD SILKLIFT 2 IN 1 SERUM 75ML":0,"BB_LD SILKLIFT 3% COND CREAM DEV 750ML":0,"BB_LD SILKLIFT 6% COND CREAM DEV 750ML":0,"BB_LD SILKLIFT 9% COND CREAM DEV 750ML":0,"BB_LD SILKLIFT STRONG 500G":0,"BB_LD SILKLIFT ZERO AMMONIA 500G":0,"BB_LD BRIGHTENER NATURAL60ML":0,"BB_LD BRIGHTENER SILVER 60ML":0,"BB_OXYCUR":0,"BB_LD DUST FREE BLUE PWDR 500g":0,"BB_LD DUST FREE PWDR 1000g":0,"BB_DEVELOPER":0,"BB_GW SYS DEVELOPER 2% 1L - 7 VOL":0,"BB_GW SYS DEVELOPER 3% 1L - 10 VOL":0,"BB_GW SYS DEVELOPER 6% 1L -20 VOL":0,"BB_GW SYS DEVELOPER 9% 1L - 30 VOL":0,"BB_GW SYS DEVELOPER 12% 1L - 40 VOL":0,"BB_SYSTEM SUPPORT":0,"BB_STRUCTURE EQUALIZER 150ML":0,"BB_SERUMS":0,"BB_COLOR INTENSIVE SERUM 12X18ML":0,"BB_COLOR ER INTENSIVE SERUM  12X18ML":0,"BB_B&H INTENSIVE SERUM 12X18ML":0,"BB_JS INTENSIVE SERUM  12X18ML":0,"BB_RR INTENSIVE SERUM 12X18ML":0,"BB_UV INTENSIVE SERUM 12X18ML":0,"BB_CW INTENSIVE SERUM 12X18ML":0};
+const importedStock   = {"TC_2N":0,"TC_3N":0,"TC_4N":0,"TC_5N":0,"TC_6N":0,"TC_7N":0,"TC_8N":0,"TC_9N":0,"TC_10N":0,"TC_11N":0,"TC_3NN":0,"TC_4NN":0,"TC_5NN":0,"TC_6NN":0,"TC_7NN":0,"TC_8NN":0,"TC_9NN":0,"TC_4NA":0,"TC_5NA":0,"TC_6NA":0,"TC_7NA":0,"TC_8NA":0,"TC_9NA":0,"TC_2A":0,"TC_5A":0,"TC_6A":0,"TC_7A":0,"TC_8A":0,"TC_9A":0,"TC_10A":0,"TC_11A":0,"TC_6SB":0,"TC_7SB":0,"TC_8SB":0,"TC_5MB":0,"TC_6MB":0,"TC_7MB":0,"TC_4G":0,"TC_6G":0,"TC_7G":0,"TC_8G":0,"TC_9G":0,"TC_9GN":0,"TC_5BG":0,"TC_7BG":0,"TC_5GB":0,"TC_6GB":0,"TC_7GB":0,"TC_8GB":0,"TC_9GB":0,"TC_10GB":0,"TC_5K":0,"TC_6K":0,"TC_7K":0,"TC_8K":0,"TC_8KN":0,"TC_6KG":0,"TC_7KG":0,"TC_8KG":0,"TC_6KR":0,"TC_7OO":0,"TC_5R":0,"TC_6R":0,"TC_5RB":0,"TC_6RB":0,"TC_7RB":0,"TC_7RO":0,"TC_5RR":0,"TC_6RR":0,"TC_7RR":0,"TC_6RV":0,"TC_10V":0,"TC_11V":0,"TC_3VV":0,"TC_5VV":0,"TC_6VV":0,"TC_11SV":0,"TC_4B":0,"TC_5B":0,"TC_6B":0,"TC_7B":0,"TC_8B":0,"TC_7BN":0,"TC_4BP":0,"TC_5BP":0,"TC_6BP":0,"TC_10P":0,"TC_11P":0,"TC_BC":0,"TC_6NP":0,"TC_7NP":0,"TC_9NP":0,"TC_11SN":0,"TC_8CA":0,"TC_9N@BS":0,"TC_9N@BP":0,"TC_8N@KK":0,"TC_8N@GB":0,"TC_8N@BS":0,"TC_7N@BP":0,"TC_7N@BK":0,"TC_6N@GB":0,"TC_5N@BP":0,"TC_5N@BK":0,"TC_7RR@RR":0,"TC_6BP@VA":0,"TC_6VV@Pk":0,"TC_7AK@Pk":0,"TC_8CA@PB":0,"TC_9N@Pk":0,"TC_7BP@Pk":0,"TC_6NN@CV":0,"CO_2A":0,"CO_6A":0,"CO_2N":0,"CO_3N":0,"CO_4N":0,"CO_5N":0,"CO_6N":0,"CO_7N":0,"CO_8N":0,"CO_9N":0,"CO_10N":0,"CO_4NN":0,"CO_5NN":0,"CO_6NN":0,"CO_7NN":0,"CO_8NN":0,"CO_5NA":0,"CO_7NA":0,"CO_9NA":0,"CO_6SB":0,"CO_8SB":0,"CO_5MB":0,"CO_7MB":0,"CO_4G":0,"CO_7G":0,"CO_8G":0,"CO_10G":0,"CO_5BG":0,"CO_7BG":0,"CO_8GB":0,"CO_9GB":0,"CO_5K":0,"CO_6K":0,"CO_8K":0,"CO_6KG":0,"CO_7KG":0,"CO_9KG":0,"CO_6KR":0,"CO_5R":0,"CO_6R":0,"CO_5RB":0,"CO_6RB":0,"CO_7RB":0,"CO_7RR":0,"CO_8OR":0,"CO_10V":0,"CO_5VV":0,"CO_6VV":0,"CO_5B":0,"CO_6B":0,"CO_7B":0,"CO_8BA":0,"CO_9BA":0,"CO_4BP":0,"CO_5BP":0,"CO_6BP":0,"CO_10P":0,"CO_CLEAR":0,"CO_10BA":0,"CO_10BB":0,"CO_10BG":0,"CO_10BS":0,"CO_10BV":0,"CO_10GP":0,"CO_8BV":0,"CO_8BP":0,"CO_10BP":0,"CO_8GP":0,"CO_8CA":0,"CO_6 NATURAL":0,"CO_7 NATURAL":0,"CO_8 NATURAL":0,"CO_7N@BP":0,"CO_6N@GB":0,"CO_5N@BP":0,"CO_7RR@RR":0,"CO_8SB@Pk":0,"CO_6VV@Pk":0,"CO_7AK@Pk":0,"CO_8CA@PB":0,"GT_8AV":0,"GT_8V":0,"GT_8BB":0,"GT_9BN":0,"GT_9CP":0,"GT_9PN":0,"GT_9PV":0,"GT_9S":0,"GT_9V":0,"GT_9BB":0,"GT_10B":0,"GT_10BN":0,"GT_10PV":0,"GT_10S":0,"GT_10BC":0,"GT_CLEAR":0,"GT_8BC":0,"GT_4BN":0,"GT_4V":0,"GT_6CR":0,"GT_6V":0,"GT_6N":0,"GT_6KG":0,"GT_7M":0,"GT_6BN":0,"GT_5GB":0,"GT_9GB":0,"GT_5PN":0,"BB_SILKLIFT":0,"BB_LD SILKLIFT CONTROL PEARL LV 6-8 500G":0,"BB_LD SILKLIFT CLAY":0,"BB_LD SILKLIFT 2 IN 1 SERUM 75ML":0,"BB_LD SILKLIFT 3% COND CREAM DEV 750ML":0,"BB_LD SILKLIFT 6% COND CREAM DEV 750ML":0,"BB_LD SILKLIFT 9% COND CREAM DEV 750ML":0,"BB_LD SILKLIFT STRONG 500G":0,"BB_LD SILKLIFT ZERO AMMONIA 500G":0,"BB_LD BRIGHTENER NATURAL60ML":0,"BB_LD BRIGHTENER SILVER 60ML":0,"BB_OXYCUR":0,"BB_LD DUST FREE BLUE PWDR 500g":0,"BB_LD DUST FREE PWDR 1000g":0,"BB_DEVELOPER":0,"BB_GW SYS DEVELOPER 2% 1L - 7 VOL":0,"BB_GW SYS DEVELOPER 3% 1L - 10 VOL":0,"BB_GW SYS DEVELOPER 6% 1L -20 VOL":0,"BB_GW SYS DEVELOPER 9% 1L - 30 VOL":0,"BB_GW SYS DEVELOPER 12% 1L - 40 VOL":0,"BB_SYSTEM SUPPORT":0,"BB_STRUCTURE EQUALIZER 150ML":0,"BB_SERUMS":0,"BB_COLOR INTENSIVE SERUM 12X18ML":0,"BB_COLOR ER INTENSIVE SERUM  12X18ML":0,"BB_B&H INTENSIVE SERUM 12X18ML":0,"BB_JS INTENSIVE SERUM  12X18ML":0,"BB_RR INTENSIVE SERUM 12X18ML":0,"BB_UV INTENSIVE SERUM 12X18ML":0,"BB_CW INTENSIVE SERUM 12X18ML":0};
 const importedOrdered = {};
 const importedEmpties = {};
 
 const initialProducts = [
   ...['2N','3N','4N','5N','6N','7N','8N','9N','10N','11N','3NN','4NN','5NN','6NN','7NN','8NN','9NN','4NA','5NA','6NA','7NA','8NA','9NA','2A','5A','6A','7A','8A','9A','10A','11A','6SB','7SB','8SB','5MB','6MB','7MB','4G','6G','7G','8G','9G','9GN','5BG','7BG','5GB','6GB','7GB','8GB','9GB','10GB','5K','6K','7K','8K','8KN','6KG','7KG','8KG','6KR','7OO','5R','6R','5RB','6RB','7RB','7RO','5RR','6RR','7RR','6RV','10V','11V','3VV','5VV','6VV','11SV','4B','5B','6B','7B','8B','7BN','4BP','5BP','6BP','10P','11P','BC','6NP','7NP','9NP','11SN','8CA','9N@BS','9N@BP','8N@KK','8N@GB','8N@BS','7N@BP','7N@BK','6N@GB','5N@BP','5N@BK','7RR@RR','6BP@VA','6VV@Pk','7AK@Pk','8CA@PB','9N@Pk','7BP@Pk','6NN@CV'].map(c=>({id:'TC_'+c.trim(),code:c.trim(),category:'TOPCHIC'})),
   ...['2A','6A','2N','3N','4N','5N','6N','7N','8N','9N','10N','4NN','5NN','6NN','7NN','8NN','5NA','7NA','9NA','6SB','8SB','5MB','7MB','4G','7G','8G','10G','5BG','7BG','8GB','9GB','5K','6K','8K','6KG','7KG','9KG','6KR','5R','6R','5RB','6RB','7RB','7RR','8OR','10V','5VV','6VV','5B','6B','7B','8BA','9BA','4BP','5BP','6BP','10P','CLEAR','10BA','10BB','10BG','10BS','10BV','10GP','8BV','8BP','10BP','8GP','8CA','6 NATURAL','7 NATURAL','8 NATURAL','7N@BP','6N@GB','5N@BP','7RR@RR','8SB@Pk','6VV@Pk','7AK@Pk','8CA@PB'].map(c=>({id:'CO_'+c.trim(),code:c.trim(),category:'COLORANCE'})),
-  ...['8AV','8V','8BB','9BN','9CP','9PN','9PV','9S','9V','9BB','10B','10BN','10PV','10S','10BC','CLEAR','8BC'].map(c=>({id:'GT_'+c.trim(),code:c.trim(),category:'GLOSS TONES'})),
+  ...['8AV','8V','8BB','9BN','9CP','9PN','9PV','9S','9V','9BB','10B','10BN','10PV','10S','10BC','CLEAR','8BC','4BN','4V','6CR','6V','6N','6KG','7M','6BN','5GB','9GB','5PN'].map(c=>({id:'GT_'+c.trim(),code:c.trim(),category:'GLOSS TONES'})),
   ...['LD SILKLIFT CONTROL PEARL LV 6-8 500G','LD SILKLIFT CLAY','LD SILKLIFT 2 IN 1 SERUM 75ML','LD SILKLIFT 3% COND CREAM DEV 750ML','LD SILKLIFT 6% COND CREAM DEV 750ML','LD SILKLIFT 9% COND CREAM DEV 750ML','LD SILKLIFT STRONG 500G','LD SILKLIFT ZERO AMMONIA 500G','LD BRIGHTENER NATURAL 60ML','LD BRIGHTENER SILVER 60ML','LD DUST FREE BLUE PWDR 500G','LD DUST FREE PWDR 1000G','GW SYS DEVELOPER 2% 1L - 7 VOL','GW SYS DEVELOPER 3% 1L - 10 VOL','GW SYS DEVELOPER 6% 1L - 20 VOL','GW SYS DEVELOPER 9% 1L - 30 VOL','GW SYS DEVELOPER 12% 1L - 40 VOL','STRUCTURE EQUALIZER 150ML','COLOR INTENSIVE SERUM 12X18ML','COLOR ER INTENSIVE SERUM 12X18ML','B&H INTENSIVE SERUM 12X18ML','JS INTENSIVE SERUM 12X18ML','RR INTENSIVE SERUM 12X18ML','UV INTENSIVE SERUM 12X18ML','CW INTENSIVE SERUM 12X18ML'].map(c=>({id:'BB_'+c.trim(),code:c.trim(),category:'BACKBAR'})),
 ];
 
@@ -536,15 +537,18 @@ function stockPill(pid){
   if(s==='low')  return `<span class="stock-pill stock-low">LOW · ${oh}</span>`;
   return `<span class="stock-pill stock-ok">${oh}</span>`;
 }
-function getLowProds(){ return state.products.filter(p=>{const s=stockStatus(p.id);return s==='low'||s==='out';}); }
+function getLowProds(){ return state.products.filter(p=>{const s=stockStatus(p.id);return s==='low';}); }
+function getOutProds(){ return state.products.filter(p=>{const s=stockStatus(p.id);return s==='out';}); }
 function toggleOnDemand(pid){
   if(state.onDemand[pid]) delete state.onDemand[pid];
   else state.onDemand[pid]=true;
   saveState(); updateLowBadge(); render();
 }
 function updateLowBadge(){
-  const n=getLowProds().length, b=document.getElementById('low-badge');
-  if(b){b.textContent=n;b.style.display=n?'inline':'none';}
+  const lowN=getLowProds().length, b=document.getElementById('low-badge');
+  if(b){b.textContent=lowN;b.style.display=lowN?'inline':'none';}
+  const outN=getOutProds().length, ob=document.getElementById('out-badge');
+  if(ob){ob.textContent=outN;ob.style.display=outN?'inline':'none';}
   const saleCount=state.products.filter(p=>isSale(p.id)).length;
   const sb=document.getElementById('sale-badge');
   if(sb){sb.textContent=saleCount;sb.style.display=saleCount?'inline':'none';}
@@ -691,8 +695,9 @@ function nextMonth(){ if(state.month===11){state.month=0;state.year++;}else stat
 function renderEmpties(){
   const {category,week,month,year,search}=state;
   const isLow=category==='lowstock';
+  const isOut=category==='outofstock';
   const isSaleView=category==='onsale';
-  let prods=isLow?getLowProds():isSaleView?state.products.filter(p=>isSale(p.id)):state.products.filter(p=>category==='all'||p.category===category);
+  let prods=isOut?getOutProds():isLow?getLowProds():isSaleView?state.products.filter(p=>isSale(p.id)):state.products.filter(p=>category==='all'||p.category===category);
   if(search){const q=search.toLowerCase();prods=prods.filter(p=>p.code.toLowerCase().includes(q));}
 
   const totalEmpties=state.products.reduce((s,p)=>s+getMonthEmpties(p.id),0);
@@ -704,8 +709,8 @@ function renderEmpties(){
   let html=`
     <div class="section-header">
       <div>
-        <div class="section-title">${isLow?'⚠️ Low Stock':isSaleView?'🏷 On Sale This Month':'📦 Log Empties'}</div>
-        <div class="section-sub">${MONTHS[month]} ${year} · ${isSaleView?'Mark items from Karen\'s flyer to bulk order':'Tap + for each empty tube pulled from the bin'}</div>
+        <div class="section-title">${isOut?'Out of Stock':isLow?'⚠️ Low Stock':isSaleView?'🏷 On Sale This Month':'📦 Log Empties'}</div>
+        <div class="section-sub">${MONTHS[month]} ${year} · ${isOut?'Products with zero stock':isSaleView?'Mark items from Karen\'s flyer to bulk order':'Tap + for each empty tube pulled from the bin'}</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-outline" onclick="openScanModal('empty')">📷 Scan Empty</button>
@@ -732,7 +737,7 @@ function renderEmpties(){
       <input class="search-input" placeholder="Search product code..." value="${search}" oninput="state.search=this.value;render()">
     </div>`;
 
-  const cats=isLow?[...new Set(getLowProds().map(p=>p.category))]:
+  const cats=(isLow||isOut)?[...new Set(prods.map(p=>p.category))]:
     isSaleView?[...new Set(state.products.filter(p=>isSale(p.id)).map(p=>p.category))]:
     category==='all'?['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR']:[category];
 
@@ -770,10 +775,11 @@ function renderEmpties(){
 function renderStock(){
   const {category,month,year,search}=state;
   const isLow=category==='lowstock';
+  const isOut=category==='outofstock';
   const isSaleView=category==='onsale';
-  let prods=isLow?getLowProds():isSaleView?state.products.filter(p=>isSale(p.id)):state.products.filter(p=>category==='all'||p.category===category);
+  let prods=isOut?getOutProds():isLow?getLowProds():isSaleView?state.products.filter(p=>isSale(p.id)):state.products.filter(p=>category==='all'||p.category===category);
   if(search){const q=search.toLowerCase();prods=prods.filter(p=>p.code.toLowerCase().includes(q));}
-  const cats=isLow?[...new Set(prods.map(p=>p.category))]:
+  const cats=(isLow||isOut)?[...new Set(prods.map(p=>p.category))]:
     isSaleView?[...new Set(prods.map(p=>p.category))]:
     category==='all'?['TOPCHIC','COLORANCE','GLOSS TONES','BACKBAR']:[category];
 
