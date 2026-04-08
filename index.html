@@ -212,6 +212,7 @@ select { background:var(--surface2); border:1px solid var(--border); border-radi
       <button class="tab" onclick="switchView('setup')">Setup</button>
       <button class="tab" onclick="switchView('recount')">Recount</button>
     </div>
+    <span id="sync-dot" title="Cloud sync" style="width:8px;height:8px;border-radius:50%;background:var(--text-dim);flex-shrink:0;transition:background .3s;"></span>
   </div>
 </header>
 
@@ -419,6 +420,10 @@ select { background:var(--surface2); border:1px solid var(--border); border-radi
 
 <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 
+<!-- Firebase SDK for cloud sync -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <script>
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const now = new Date();
@@ -485,6 +490,74 @@ function idbClear(){
       tx.oncomplete = () => resolve(true);
       tx.onerror = () => resolve(false);
     } catch(e){ resolve(false); }
+  });
+}
+
+// ── Firebase Cloud Sync ───────────────────────────────────────────────────────
+let fbDb = null;
+let fbRef = null;
+let fbReady = false;
+let fbSyncing = false; // prevents echo when we receive our own writes
+let fbLastWrite = 0;   // timestamp of our last write
+
+function initFirebase(){
+  try {
+    const app = firebase.initializeApp({
+      apiKey: "AIzaSyAErjFpvTk5uP_jDx5Stse2Via0WVwhWpk",
+      authDomain: "vintagerootsapp.firebaseapp.com",
+      databaseURL: "https://vintagerootsapp-default-rtdb.firebaseio.com",
+      projectId: "vintagerootsapp",
+      storageBucket: "vintagerootsapp.firebasestorage.app",
+      messagingSenderId: "1029744820370",
+      appId: "1:1029744820370:web:1f649f98a23134a77ba64b"
+    });
+    fbDb = firebase.database();
+    fbRef = fbDb.ref('inventory/' + STATE_KEY);
+    fbReady = true;
+    console.log('Firebase connected');
+    // Update sync indicator
+    const dot = document.getElementById('sync-dot');
+    if(dot){ dot.style.background='var(--green)'; dot.title='Cloud sync active'; }
+
+    // Listen for changes from other devices
+    fbRef.on('value', (snapshot)=>{
+      if(!fbReady) return;
+      // Skip if this was triggered by our own write (within 3 seconds)
+      if(Date.now() - fbLastWrite < 3000) return;
+      const data = snapshot.val();
+      if(!data) return;
+      try {
+        const p = typeof data === 'string' ? JSON.parse(data) : data;
+        if(!p.products || !Array.isArray(p.products)) return;
+        if(p._appVersion !== APP_VERSION) return;
+        fbSyncing = true;
+        applyParsedState(p);
+        // Also update local storage
+        const payload = JSON.stringify(getStatePayload());
+        try { localStorage.setItem(STATE_KEY, payload); } catch(e){}
+        idbPut(STATE_KEY, payload);
+        render();
+        showToast('Synced from cloud');
+        fbSyncing = false;
+      } catch(e){ fbSyncing = false; }
+    });
+  } catch(e){
+    console.warn('Firebase init failed:', e);
+    fbReady = false;
+  }
+}
+
+function saveToFirebase(){
+  if(!fbReady || !fbRef || fbSyncing) return;
+  fbLastWrite = Date.now();
+  const payload = getStatePayload();
+  const dot = document.getElementById('sync-dot');
+  if(dot) dot.style.background='var(--gold)';
+  fbRef.set(JSON.stringify(payload)).then(()=>{
+    if(dot) setTimeout(()=>{ dot.style.background='var(--green)'; }, 400);
+  }).catch(e=>{
+    console.warn('Firebase save failed:', e);
+    if(dot){ dot.style.background='var(--red)'; dot.title='Cloud sync error'; }
   });
 }
 
@@ -571,6 +644,8 @@ function saveState(){
   idbPut(STATE_KEY, payload).then(ok=>{
     if(!ok) console.warn('IndexedDB save failed, localStorage backup active');
   });
+  // Also write to Firebase for cross-device sync
+  saveToFirebase();
 }
 
 function applyParsedState(p){
@@ -639,6 +714,33 @@ async function loadStateFromIDB(){
   saveState();
 }
 
+async function loadFromFirebaseOnce(){
+  // On boot, do a one-time check of Firebase to get the latest cloud data
+  if(!fbReady || !fbRef) return;
+  try {
+    const snapshot = await fbRef.once('value');
+    const data = snapshot.val();
+    if(!data) {
+      // No cloud data yet — push current local data up
+      saveToFirebase();
+      return;
+    }
+    const p = typeof data === 'string' ? JSON.parse(data) : data;
+    if(!p.products || !Array.isArray(p.products)) return;
+    if(p._appVersion !== APP_VERSION) return;
+    // Cloud data found — apply it (it's the most recent cross-device state)
+    fbSyncing = true;
+    applyParsedState(p);
+    const payload = JSON.stringify(getStatePayload());
+    try { localStorage.setItem(STATE_KEY, payload); } catch(e){}
+    idbPut(STATE_KEY, payload);
+    render();
+    fbSyncing = false;
+  } catch(e){
+    console.warn('Firebase initial load failed:', e);
+  }
+}
+
 // ── Export & Import Data ────────────────────────────────────────────────────
 function exportData(){
   const payload = JSON.stringify(getStatePayload(), null, 2);
@@ -676,11 +778,25 @@ function importData(){
 }
 
 // ── Safari Tab Suspension Fix ───────────────────────────────────────────────
+let lastActive = Date.now();
+setInterval(()=>{ lastActive = Date.now(); }, 5000);
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'visible'){
-    // Tab became visible again — reload state in case Safari purged memory
-    loadStateSync();
-    render();
+    const elapsed = Date.now() - lastActive;
+    if(elapsed > 30000){
+      // Safari suspended the tab for 30+ seconds — full reload to restore JS context
+      window.location.reload();
+    } else {
+      loadStateSync();
+      render();
+    }
+  }
+});
+// Also catch Safari's pageshow event for bfcache restoration
+window.addEventListener('pageshow', (e)=>{
+  if(e.persisted){
+    // Page was restored from Safari's back-forward cache — full reload
+    window.location.reload();
   }
 });
 
@@ -1651,10 +1767,15 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// Boot: sync load for instant render, then upgrade to IndexedDB
+// Boot: sync load for instant render, then upgrade to IndexedDB + Firebase
 loadStateSync();
 render();
-openIDB().then(()=> loadStateFromIDB());
+openIDB().then(()=> loadStateFromIDB()).then(()=>{
+  // Initialize Firebase after local data is loaded
+  initFirebase();
+  // Give Firebase a moment to connect, then pull latest cloud data
+  setTimeout(()=> loadFromFirebaseOnce(), 1500);
+});
 </script>
 </body>
 </html>
