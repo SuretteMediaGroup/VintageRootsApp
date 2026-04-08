@@ -183,26 +183,37 @@ select { background:var(--surface2); border:1px solid var(--border); border-radi
   /* Show hamburger, hide sidebar by default */
   .menu-toggle { display:flex; align-items:center; justify-content:center; }
 
-  header { padding:0 12px; height:52px; }
-  .logo img { height:30px !important; }
+  /* Stacked header: logo row on top, tabs row below */
+  header {
+    flex-wrap:wrap; height:auto; padding:8px 12px 0;
+    justify-content:center; gap:0;
+  }
+  .logo { order:1; }
+  .logo img { height:28px !important; }
   .logo-sub { font-size:8px; }
   .logo > div[style*="border-left"] { display:none; }
+  .menu-toggle { order:0; position:absolute; left:10px; top:10px; }
+  #sync-dot { order:2; position:absolute; right:12px; top:16px; }
 
-  /* Tabs scroll horizontally */
-  .header-right { overflow-x:auto; -webkit-overflow-scrolling:touch; flex-shrink:1; min-width:0; }
-  .tabs { flex-wrap:nowrap; gap:1px; padding:3px; }
-  .tab { padding:5px 9px; font-size:11px; white-space:nowrap; flex-shrink:0; }
+  /* Tabs as full-width row below logo */
+  .header-right {
+    order:3; width:100%; justify-content:center;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    padding:6px 0 8px; flex-shrink:0;
+  }
+  .tabs { gap:1px; padding:3px; width:100%; justify-content:center; }
+  .tab { padding:6px 10px; font-size:11px; white-space:nowrap; flex-shrink:0; }
 
   /* Sidebar becomes slide-out overlay */
-  .app { flex-direction:column; height:auto; min-height:calc(100vh - 52px); }
+  .app { flex-direction:column; height:auto; min-height:calc(100vh - 90px); }
   .sidebar {
-    position:fixed; top:52px; left:0; bottom:0; width:240px;
+    position:fixed; top:0; left:0; bottom:0; width:260px;
     z-index:200; transform:translateX(-100%); transition:transform .25s ease;
-    box-shadow:4px 0 20px rgba(0,0,0,.15);
+    box-shadow:4px 0 20px rgba(0,0,0,.15); padding-top:14px;
   }
   .sidebar.open { transform:translateX(0); }
   .sidebar-overlay {
-    display:none; position:fixed; inset:0; top:52px;
+    display:none; position:fixed; inset:0;
     background:rgba(0,0,0,.3); z-index:199;
   }
   .sidebar-overlay.show { display:block; }
@@ -251,7 +262,7 @@ select { background:var(--surface2); border:1px solid var(--border); border-radi
 
 /* Small phone (iPhone SE, etc) */
 @media (max-width: 375px) {
-  .tab { padding:4px 7px; font-size:10px; }
+  .tab { padding:5px 8px; font-size:10px; }
   .bin-grid { grid-template-columns:1fr 1fr; gap:5px; }
   .stats-row { grid-template-columns:1fr 1fr; gap:5px; }
   .stat-value { font-size:20px; }
